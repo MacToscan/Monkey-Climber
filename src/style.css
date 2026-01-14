@@ -1,0 +1,29 @@
+/* 1. Reseteo total para eliminar el marco blanco */
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background-color: #2d9bf0; /* El mismo azul de tu cielo para camuflar la carga */
+    overflow: hidden; /* IMPORTANTE: Impide que aparezcan barras de scroll */
+  }
+  
+  /* 2. Ajustes para el Canvas del juego */
+  canvas {
+    display: block; /* Quita el espacio blanco inferior que a veces sale */
+    width: 100%;
+    height: 100%;
+    
+    /* 3. Evitar que el usuario seleccione cosas sin querer en el móvil */
+    touch-action: none; /* Vital para juegos: desactiva el zoom y scroll del navegador */
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+  }
+  
+  /* Opcional: Centrar si en algún momento el canvas es más pequeño (aunque con RESIZE no pasará) */
+  body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
