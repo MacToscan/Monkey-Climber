@@ -18,7 +18,7 @@ const SKINS = [
     id: 'monkeyBro', 
     name: 'Climbro',   // <--- Nuevo nombre
     family: 'Principales', 
-    price: 200, 
+    price: 2, 
     shopImg: 'figureBro', 
     scaleShop: 2.3 
   },
@@ -28,9 +28,19 @@ const SKINS = [
     id: 'broku', 
     name: 'Broku', 
     family: 'Dragon Broll', 
-    price: 500, 
+    price: 5, 
     shopImg: 'figureBroku', 
     scaleShop: 2.3 // Ajustado un pelin
+  },
+
+  // --- FAMILIA: MARBREL ---
+  { 
+    id: 'brhulk', 
+    name: 'Brhulk', 
+    family: 'Marbrel', // <--- ¡Nombre actualizado!
+    price: 5, 
+    shopImg: 'figureBrhulk', 
+    scaleShop: 2.5 
   }
 ];
 
@@ -44,7 +54,7 @@ class MainMenu extends Phaser.Scene {
       const totalBananas = localStorage.getItem('monkey_bananas') || 0;
       const highScore = localStorage.getItem('monkey_highscore') || 0;
 
-      this.titleText = this.add.text(0, 0, 'RETRO CLIMBER\nBROs', { 
+      this.titleText = this.add.text(0, 0, "CLIMBRO's\nRETRO", { 
           fontSize: '45px', fill: '#ffd700', fontStyle: 'bold', align: 'center' 
       }).setOrigin(0.5);
 
@@ -96,7 +106,7 @@ class MainMenu extends Phaser.Scene {
   }
 }
 
-// ================== ESCENA 2: TIENDA (REDSEÑO RETRO) ==================
+// ================== ESCENA 2: TIENDA (MEJORADA) ==================
 class ShopScene extends Phaser.Scene {
   constructor() { super({ key: 'ShopScene' }); }
 
@@ -104,28 +114,26 @@ class ShopScene extends Phaser.Scene {
     this.load.image('figureClimber', '/monkeyclimber-figure.png');
     this.load.image('figureBro', '/monkeybro-figure.png');
     this.load.image('figureBroku', '/broku-figure.png');
+    this.load.image('figureBrhulk', '/brhulk-figure.png');
   }
 
-  create() {
-    // Fondo oscuro
-    this.add.rectangle(0, 0, this.scale.width, this.scale.height, 0x1a1a1a).setOrigin(0);
-    
-    // Cabecera
-    this.add.text(this.scale.width/2, 50, 'SHOP', { fontSize: '40px', fill: '#ffd700', fontStyle: 'bold' }).setOrigin(0.5);
-    
-    // Bananas y Botón Salir
-    this.totalBananas = parseInt(localStorage.getItem('monkey_bananas') || 0);
-    this.moneyText = this.add.text(this.scale.width - 30, 50, `${this.totalBananas} 🍌`, { fontSize: '24px', fill: '#fff' }).setOrigin(1, 0.5);
-    
-    const exitBtn = this.add.text(30, 50, '< BACK', { fontSize: '24px', fill: '#fff' }).setOrigin(0, 0.5).setInteractive();
-    exitBtn.on('pointerdown', () => this.scene.start('MainMenu'));
+  // Recibimos 'data' al iniciar (aquí viene la posición del scroll guardada)
+  create(data) {
+    const width = this.scale.width;
+    const height = this.scale.height;
 
-    // --- GENERAR LISTA ---
-    let yPos = 120;
+    // --- 1. FONDO DE LA TIENDA (Detrás de todo) ---
+    this.add.rectangle(0, 0, width, height, 0x1a1a1a)
+        .setOrigin(0)
+        .setScrollFactor(0); 
+
+    // --- 2. GENERAR LISTA DE PERSONAJES (Capa Baja) ---
+    // Empezamos más abajo (150px) para que no choque con la cabecera
+    let yPos = 150; 
+    
     const unlockedSkins = JSON.parse(localStorage.getItem('unlocked_skins') || '["monkey"]');
     const equippedSkin = localStorage.getItem('equipped_skin') || 'monkey';
 
-    // Agrupar por familias
     const families = {};
     SKINS.forEach(skin => {
         if (!families[skin.family]) families[skin.family] = [];
@@ -134,39 +142,32 @@ class ShopScene extends Phaser.Scene {
 
     for (const [familyName, skins] of Object.entries(families)) {
         // Título Familia
-        this.add.text(this.scale.width/2, yPos, familyName.toUpperCase(), { fontSize: '20px', fill: '#2d9bf0', fontStyle: 'bold' }).setOrigin(0.5);
+        this.add.text(width/2, yPos, familyName.toUpperCase(), { fontSize: '20px', fill: '#2d9bf0', fontStyle: 'bold' }).setOrigin(0.5);
         yPos += 45;
 
         // Centrar fila
-        const cardWidth = 110; // Un poco más ancha para que quepa el nombre
+        const cardWidth = 110; 
         const spacing = 15;
         const totalRowWidth = (skins.length * cardWidth) + ((skins.length - 1) * spacing);
-        let startX = (this.scale.width - totalRowWidth) / 2 + (cardWidth / 2);
+        let startX = (width - totalRowWidth) / 2 + (cardWidth / 2);
 
         skins.forEach((skin) => {
             const isUnlocked = unlockedSkins.includes(skin.id);
             const isEquipped = equippedSkin === skin.id;
 
-            // Aumentamos la altura del contenedor para que quepan nombres y precios
             const container = this.add.container(startX, yPos + 60);
 
-            // 1. FONDO TARJETA
-            // Si está equipado usamos un borde dorado/blanco, si no gris
+            // Fondo Tarjeta
             let bgColor = 0x333333;
             let strokeColor = 0x000000;
-            
-            if (isEquipped) {
-                bgColor = 0x2d9bf0; // Azul seleccionado de fondo suave
-                strokeColor = 0xffffff;
-            } else if (isUnlocked) {
-                bgColor = 0x317db8; // Desbloqueado
-            }
+            if (isEquipped) { bgColor = 0x2d9bf0; strokeColor = 0xffffff; } 
+            else if (isUnlocked) { bgColor = 0x317db8; }
 
             const bg = this.add.rectangle(0, 0, cardWidth, 150, bgColor).setInteractive();
             bg.setStrokeStyle(isEquipped ? 3 : 2, strokeColor);
             container.add(bg);
 
-            // 2. IMAGEN PERSONAJE (Un poco más arriba para dejar sitio al nombre)
+            // Imagen
             if (this.textures.exists(skin.shopImg)) {
                 const sprite = this.add.image(0, -20, skin.shopImg).setScale(skin.scaleShop);
                 container.add(sprite);
@@ -174,58 +175,45 @@ class ShopScene extends Phaser.Scene {
                 container.add(this.add.text(0, -25, '?', { fontSize: '30px' }).setOrigin(0.5));
             }
 
-            // 3. NOMBRE DEL PERSONAJE (Siempre visible)
+            // Nombre
             const nameText = this.add.text(0, 65, skin.name.toUpperCase(), { 
-                fontSize: '16px', 
-                fill: '#ffffff', 
-                fontStyle: 'bold',
-                fontFamily: 'Courier' // Fuente tipo máquina de escribir/retro
+                fontSize: '16px', fill: '#ffffff', fontStyle: 'bold', fontFamily: 'Courier' 
             }).setOrigin(0.5);
             container.add(nameText);
 
-            // 4. LÓGICA DE ESTADO (SELLO vs PRECIO)
+            // Lógica Unlocked / Precio / Selección
             if (isUnlocked) {
-                // Lógica de clic: Equipar
                 bg.on('pointerdown', () => {
+                    if (this.isDragging) return; 
                     localStorage.setItem('equipped_skin', skin.id);
-                    this.scene.restart();
+                    // ¡AQUÍ ESTÁ EL TRUCO! Guardamos la posición actual antes de reiniciar
+                    const currentScroll = this.cameras.main.scrollY;
+                    this.scene.restart({ savedScroll: currentScroll });
                 });
 
-                // SELLO "SELECTED" (Estilo Correo) -> Solo si está equipado
                 if (isEquipped) {
-                    // El borde del sello
                     const stampBox = this.add.rectangle(0, 0, 90, 30);
-                    stampBox.setStrokeStyle(3, 0x850b0b); // Rojo puro
-                    stampBox.setRotation(-0.2); // Un poco inclinado
+                    stampBox.setStrokeStyle(3, 0xffffff);
+                    stampBox.setRotation(-0.2);
                     container.add(stampBox);
-
-                    // El texto del sello
-                    const stampText = this.add.text(0, 0, 'SELECTED', {
-                        fontSize: '16px',
-                        fill: '#ffffff',
-                        fontStyle: 'bold'
-                    }).setOrigin(0.5).setRotation(-0.2);
+                    const stampText = this.add.text(0, 0, 'SELECTED', { fontSize: '16px', fill: '#ffffff', fontStyle: 'bold' }).setOrigin(0.5).setRotation(-0.2);
                     container.add(stampText);
                 }
-
             } else {
-                // NO DESBLOQUEADO -> Mostrar PRECIO debajo del nombre
-                const priceText = this.add.text(0, 45, `${skin.price} 🍌`, { 
-                    fontSize: '14px', 
-                    fill: '#ffff00', 
-                    fontStyle: 'bold' 
-                }).setOrigin(0.5);
+                const priceText = this.add.text(0, 45, `${skin.price} 🍌`, { fontSize: '14px', fill: '#ffff00', fontStyle: 'bold' }).setOrigin(0.5);
                 container.add(priceText);
-
-                // Lógica de clic: Comprar
                 bg.on('pointerdown', () => {
+                    if (this.isDragging) return;
                     if (this.totalBananas >= skin.price) {
                         this.totalBananas -= skin.price;
                         localStorage.setItem('monkey_bananas', this.totalBananas);
                         unlockedSkins.push(skin.id);
                         localStorage.setItem('unlocked_skins', JSON.stringify(unlockedSkins));
                         localStorage.setItem('equipped_skin', skin.id);
-                        this.scene.restart();
+                        
+                        // Guardar posición al comprar también
+                        const currentScroll = this.cameras.main.scrollY;
+                        this.scene.restart({ savedScroll: currentScroll });
                     } else {
                         this.cameras.main.shake(200, 0.005);
                     }
@@ -235,7 +223,76 @@ class ShopScene extends Phaser.Scene {
             this.add.existing(container);
             startX += cardWidth + spacing;
         });
-        yPos += 200; // Más espacio vertical
+        yPos += 200; 
+    }
+
+    // --- 3. CABECERA UI (Depth alto para tapar el scroll) ---
+    // Creamos un rectángulo sólido arriba del todo
+    // Depth 100 asegura que esté por encima de los personajes (Depth 0)
+    const headerHeight = 100;
+    this.add.rectangle(0, 0, width, headerHeight, 0x1a1a1a) // Mismo color que el fondo
+        .setOrigin(0)
+        .setScrollFactor(0)
+        .setDepth(100); 
+
+    // Texto y Botones (Depth 101 para que se vean sobre el rectángulo)
+    this.add.text(width/2, 50, 'SHOP', { fontSize: '40px', fill: '#ffd700', fontStyle: 'bold' })
+        .setOrigin(0.5)
+        .setScrollFactor(0)
+        .setDepth(101);
+    
+    this.totalBananas = parseInt(localStorage.getItem('monkey_bananas') || 0);
+    this.moneyText = this.add.text(width - 30, 50, `${this.totalBananas} 🍌`, { fontSize: '24px', fill: '#fff' })
+        .setOrigin(1, 0.5)
+        .setScrollFactor(0)
+        .setDepth(101);
+    
+    const exitBtn = this.add.text(30, 50, '< BACK', { fontSize: '24px', fill: '#fff' })
+        .setOrigin(0, 0.5)
+        .setInteractive()
+        .setScrollFactor(0)
+        .setDepth(101);
+    
+    exitBtn.on('pointerdown', () => this.scene.start('MainMenu'));
+
+    // --- 4. CONFIGURACIÓN DE SCROLL ---
+    const contentHeight = yPos + 50; 
+    
+    if (contentHeight > height) {
+        this.cameras.main.setBounds(0, 0, width, contentHeight);
+        
+        // RECUPERAR POSICIÓN GUARDADA
+        if (data && data.savedScroll) {
+            this.cameras.main.scrollY = data.savedScroll;
+        }
+
+        this.isDragging = false;
+        let startY = 0;
+
+        this.input.on('pointerdown', (pointer) => {
+            this.isDragging = false;
+            startY = pointer.y;
+        });
+
+        this.input.on('pointermove', (pointer) => {
+            if (pointer.isDown) {
+                const distY = pointer.y - pointer.prevPosition.y;
+                if (Math.abs(pointer.y - startY) > 10) this.isDragging = true;
+                this.cameras.main.scrollY -= distY;
+                
+                // Clamping
+                if (this.cameras.main.scrollY < 0) this.cameras.main.scrollY = 0;
+                const maxScroll = contentHeight - height;
+                if (this.cameras.main.scrollY > maxScroll) this.cameras.main.scrollY = maxScroll;
+            }
+        });
+
+        this.input.on('wheel', (pointer, gameObjects, deltaX, deltaY, deltaZ) => {
+            this.cameras.main.scrollY += deltaY;
+            if (this.cameras.main.scrollY < 0) this.cameras.main.scrollY = 0;
+            const maxScroll = contentHeight - height;
+            if (this.cameras.main.scrollY > maxScroll) this.cameras.main.scrollY = maxScroll;
+        });
     }
   }
 }
@@ -245,19 +302,20 @@ class GameScene extends Phaser.Scene {
   constructor() { super({ key: 'GameScene' }) }
 
   preload() {
+    //Los que están dentro del juego
     this.load.spritesheet('troncosSheet', '/troncos_final.png', { frameWidth: 256, frameHeight: 256 });
     this.load.spritesheet('monkey', '/monkey_climb_strip.png', { frameWidth: 34, frameHeight: 34 });
     this.load.spritesheet('monkeyBro', '/monkey-bro.png', { frameWidth: 34, frameHeight: 34 });
     this.load.spritesheet('oruga', '/oruga_strip2.png', { frameWidth: 40, frameHeight: 40 });
     this.load.spritesheet('arana', '/arana.png', { frameWidth: 64, frameHeight: 64 });
-    
-    // --- AQUÍ CARGAREMOS A BROKU (40x40) ---
-    // Cuando tengas el archivo en la carpeta, descomenta esta línea:
+    this.load.spritesheet('abeja', '/bee.png', { frameWidth: 40, frameHeight: 40 });
     this.load.spritesheet('broku', '/broku.png', { frameWidth: 40, frameHeight: 40 });
-
+    this.load.spritesheet('brhulk', '/brhulk.png', { frameWidth: 34, frameHeight: 34 });
+    //Los que están en la tienda
     this.load.image('figureClimber', '/monkeyclimber-figure.png');
     this.load.image('figureBro', '/monkeybro-figure.png');
     this.load.image('figureBroku', '/broku-figure.png');
+    this.load.image('figureBrhulk', '/brhulk-figure.png');
   }
 
   create() {
@@ -312,13 +370,35 @@ class GameScene extends Phaser.Scene {
     if (!this.anims.exists('climbBroku')) {
         // Solo la crea si la textura 'broku' ha cargado
         if(this.textures.exists('broku')) {
-            this.anims.create({ key: 'climbBroku', frames: this.anims.generateFrameNumbers('broku', { start: 0, end: 4 }), frameRate: 10, repeat: -1 });
+            this.anims.create({ 
+              key: 'climbBroku', 
+              frames: this.anims.generateFrameNumbers('broku', { start: 0, end: 4 }), 
+              rameRate: 10, 
+              repeat: -1 });
         }
     }
+    if (this.textures.exists('brhulk')) {
+      if (!this.anims.exists('climbBrhulk')) {
+          this.anims.create({ 
+              key: 'climbBrhulk', 
+              frames: this.anims.generateFrameNumbers('brhulk', { start: 0, end: 4 }), 
+              frameRate: 10, 
+              repeat: -1 
+          });
+      }
+  }
 
     if (!this.anims.exists('crawl')) {
       this.anims.create({ key: 'crawl', frames: this.anims.generateFrameNumbers('oruga', { start: 0, end: 1 }), frameRate: 4, repeat: -1 });
     }
+    // --- ANIMACIONES ABEJA ---
+    if (!this.anims.exists('beeLeft')) {
+      this.anims.create({ key: 'beeLeft', frames: this.anims.generateFrameNumbers('abeja', { frames: [1, 2] }), frameRate: 10, repeat: -1 });
+  }
+  if (!this.anims.exists('beeRight')) {
+      this.anims.create({ key: 'beeRight', frames: this.anims.generateFrameNumbers('abeja', { frames: [4, 5] }), frameRate: 10, repeat: -1 });
+  }
+    
 
     // --- TRONCOS ---
     this.troncoGroup = this.add.group();
@@ -339,12 +419,17 @@ class GameScene extends Phaser.Scene {
     // Si la skin elegida no existe (ej: borraste la imagen), usa 'monkey' por seguridad
     const spriteKey = this.textures.exists(this.currentLeaderSkin) ? this.currentLeaderSkin : 'monkey';
     
-    this.monkeySprite = this.add.sprite(0, 0, spriteKey).setScale(2.0);
+    // Definir escala: Si es Brhulk usa 2.6 (Gigante), si no usa 2.0 (Normal)
+    const startScale = (spriteKey === 'brhulk') ? 2.4 : 2.0; 
+    
+    // Aplicamos esa escala
+    this.monkeySprite = this.add.sprite(0, 0, spriteKey).setScale(startScale);
     
     // Reproducir la animación correcta según la skin
     if (spriteKey === 'monkey') this.monkeySprite.play('climb');
     else if (spriteKey === 'monkeyBro') this.monkeySprite.play('climbBro');
     else if (spriteKey === 'broku') this.monkeySprite.play('climbBroku');
+    else if (spriteKey === 'brhulk') this.monkeySprite.play('climbBrhulk');
 
     this.player = this.add.container(centerX, height * 0.75, [this.monkeySprite])
     this.physics.add.existing(this.player)
@@ -362,7 +447,8 @@ class GameScene extends Phaser.Scene {
 
     // -------- GRUPOS --------
     this.obstacles = this.physics.add.group(); 
-    this.spiders = this.physics.add.group();   
+    this.spiders = this.physics.add.group(); 
+    this.bees = this.physics.add.group();  
     this.bananas = this.physics.add.group();
     this.chilis = this.physics.add.group();
     this.rocks = this.physics.add.group();
@@ -371,6 +457,7 @@ class GameScene extends Phaser.Scene {
     // -------- COLISIONES --------
     this.physics.add.overlap(this.player, this.obstacles, () => this.hit());
     this.physics.add.overlap(this.player, this.spiders, () => this.hit()); 
+    this.physics.add.overlap(this.player, this.bees, () => this.hit()); 
     this.physics.add.overlap(this.player, this.rocks, (player, rock) => { rock.destroy(); this.hit(); });
     this.physics.add.overlap(this.player, this.bananas, this.collectBanana, null, this);
     this.physics.add.overlap(this.player, this.chilis, this.collectChili, null, this);
@@ -439,13 +526,18 @@ class GameScene extends Phaser.Scene {
     // === SPAWN POR DISTANCIA (AJUSTADO) ===
     this.spawnAccumulator += move; 
     if (this.spawnAccumulator >= this.nextSpawnDistance) {
-        const chanceSpider = Math.min(35, this.level * 3 + 15); 
         
-        if (Phaser.Math.Between(0, 100) < chanceSpider) {
-             this.spawnSpider();
+        const roll = Phaser.Math.Between(0, 100);
+        
+        // Lógica de Niveles
+        if (this.level < 3) {
+            this.spawnOruga();
         } else {
-             this.spawnOruga();
+            if (roll < 30) this.spawnSpider();
+            else if (roll < 60) this.spawnBee(); // <--- AHORA SÍ
+            else this.spawnOruga();
         }
+
         this.spawnAccumulator = 0;
         this.nextSpawnDistance = Phaser.Math.Between(400, 700);
     }
@@ -477,6 +569,67 @@ class GameScene extends Phaser.Scene {
             if (oruga.y > this.scale.height + 100) oruga.destroy();
         }
     });
+
+    // IA Abejas (Con GIRO SUAVE usando Frame 0) 🐝✨
+    if (this.bees) {
+      this.bees.getChildren().forEach((bee) => {
+          // Siempre baja con el árbol
+          bee.y += move; 
+
+          // Si está girando, NO hacemos nada más (se queda quieta mirando de frente)
+          if (bee.getData('isTurning')) return;
+
+          // --- MOVIMIENTO NORMAL ---
+          const dir = bee.getData('direction');
+          const speed = bee.getData('speedX');
+          
+          if (dir && speed) {
+              // Mover X
+              bee.body.velocity.x = dir * speed;
+
+              // Curva vertical (Péndulo)
+              const offsetFromCenter = bee.x - bee.getData('patrolCenter');
+              const curveHeight = Math.cos(offsetFromCenter / 40) * 3; 
+              bee.y -= curveHeight; 
+              
+              // Inclinación
+              bee.setRotation(bee.body.velocity.x * 0.002);
+
+              // --- DETECCIÓN DE GIRO ---
+              const currentX = bee.x;
+              const center = bee.getData('patrolCenter');
+              const range = bee.getData('patrolRange');
+
+              // ¿Ha llegado al límite?
+              if ((dir === 1 && currentX > center + range) || (dir === -1 && currentX < center - range)) {
+                  
+                  // 1. ACTIVAR MODO GIRO
+                  bee.setData('isTurning', true);
+                  bee.body.velocity.x = 0; // Frenar en seco
+                  bee.setRotation(0);      // Ponerla recta
+                  bee.anims.stop();        // Parar aleteo lateral
+                  bee.setFrame(0);         // <--- ¡AQUÍ USAMOS EL FRAME DE FRENTE! 👀
+
+                  // 2. ESPERAR UN POCO (200ms) Y CAMBIAR DIRECCIÓN
+                  this.time.delayedCall(200, () => {
+                      if (!bee.active) return; // Por si la matas justo en ese momento
+                      
+                      // Calcular nueva dirección
+                      const newDir = (dir === 1) ? -1 : 1;
+                      bee.setData('direction', newDir);
+                      
+                      // Arrancar de nuevo
+                      if (newDir === 1) bee.play('beeRight');
+                      else bee.play('beeLeft');
+                      
+                      bee.setData('isTurning', false); // Fin del giro
+                  });
+              }
+          }
+
+          if (bee.y > this.scale.height + 100) bee.destroy();
+      });
+  }
 
     // === LÓGICA DE ARAÑAS E HILOS ===
     this.webGraphics.clear(); 
@@ -511,7 +664,7 @@ class GameScene extends Phaser.Scene {
             }
             else if (yoyoState === 2) {
                 yoyoOffset += yoyoSpeed;
-                if (yoyoOffset >= 220) {
+                if (yoyoOffset >= 140) {
                     spider.setData('yoyoState', 3); 
                     spider.setData('yoyoSpeed', -3); 
                     spider.setFrame(0); 
@@ -634,6 +787,33 @@ class GameScene extends Phaser.Scene {
     this.obstacles.add(oruga);
   }
 
+  spawnBee() {
+    const centerX = this.scale.width * 0.5;
+    const playableWidth = this.currentTreeVisualWidth - 40;
+    const spawnX = centerX + Phaser.Math.Between(-playableWidth/3, playableWidth/3);
+    
+    // Crear sprite
+    const bee = this.add.sprite(spawnX, -60, 'abeja').setScale(2);
+    this.physics.add.existing(bee);
+    bee.setDepth(6);
+    bee.body.setCircle(12); 
+    bee.body.setOffset(8, 8);
+
+    // Datos de IA
+    const startDir = Phaser.Math.RND.pick([1, -1]);
+    bee.setData('direction', startDir);
+    bee.setData('speedX', 100);
+    bee.setData('patrolCenter', spawnX);
+    bee.setData('patrolRange', 70);
+
+    // Animación inicial segura
+    if (startDir === 1) bee.play('beeRight');
+    else bee.play('beeLeft');
+
+    // Añadir al grupo (Importante)
+    this.bees.add(bee);
+  }
+
   spawnSpider() {
     const centerX = this.scale.width * 0.5;
     const playableWidth = this.currentTreeVisualWidth - 60;
@@ -698,11 +878,35 @@ class GameScene extends Phaser.Scene {
   }
   collectBanana(_, b) { b.destroy(); this.sessionBananas++; this.totalBananas++; this.bananaText.setText('🍌 ' + this.sessionBananas); localStorage.setItem('monkey_bananas', this.totalBananas); }
   collectChili(_, c) { c.destroy(); if (this.isTurbo) return; this.isTurbo = true; this.gameSpeed += 400; this.monkeySprite.setTint(0xff4500); this.time.delayedCall(6000, () => { this.gameSpeed -= 400; this.monkeySprite.clearTint(); this.isTurbo = false; }); }
-  rescueBro(_, b) { const s = b.getData('skin'); b.destroy(); if (this.hasBro) return; this.hasBro = true; this.broObject = this.add.sprite(this.player.x, this.player.y + 100, s).setScale(2.0); this.broObject.setDepth(9); const a = (s === 'monkeyBro') ? 'climbBro' : 'climb'; 
-    // CORRECCIÓN PARA ANIMACIÓN DE RESCATE
-    if (s === 'broku' && this.anims.exists('climbBroku')) this.broObject.play('climbBroku');
-    else if (s === 'monkeyBro') this.broObject.play('climbBro');
-    else this.broObject.play('climb');
+  rescueBro(_, b) { 
+    const s = b.getData('skin'); 
+    b.destroy(); 
+    
+    if (this.hasBro) return; 
+    
+    this.hasBro = true; 
+    
+    // 1. ESCALA: Si es Brhulk lo ponemos gigante (2.6), si no normal (2.0)
+    const scale = (s === 'brhulk') ? 2.2 : 2.0;
+
+    // Crear el objeto
+    this.broObject = this.add.sprite(this.player.x, this.player.y + 100, s).setScale(scale); 
+    this.broObject.setDepth(9); 
+    
+    // 2. ANIMACIÓN: Elegir la correcta según quién sea
+    if (s === 'broku' && this.anims.exists('climbBroku')) {
+        this.broObject.play('climbBroku');
+    } 
+    else if (s === 'monkeyBro') {
+        this.broObject.play('climbBro');
+    } 
+    else if (s === 'brhulk' && this.anims.exists('climbBrhulk')) { // <--- ¡ESTO FALTABA!
+        this.broObject.play('climbBrhulk');
+    } 
+    else {
+        // Fallback: Mono normal
+        this.broObject.play('climb');
+    }
   }
   
   levelUp() { this.level++; this.nextLevelScore += 2000; this.levelText.setText('Lv ' + this.level); this.gameSpeed += 40; const t = this.add.text(this.scale.width*0.5, this.scale.height*0.5, `LEVEL ${this.level}`, { fontSize: '60px', fill: '#fff', stroke: '#000', strokeThickness: 6 }).setOrigin(0.5).setDepth(200); this.time.delayedCall(500, () => t.destroy()); if (this.level === 2 && !this.rocksActivated) { this.rocksActivated = true; this.time.addEvent({ delay: 2000, loop: true, callback: () => this.spawnRock() }); } if (this.level >= 3 && !this.hasBro) this.spawnBroItem(); }
@@ -715,11 +919,17 @@ class GameScene extends Phaser.Scene {
       // Cambio de skin al ser golpeado (el bro toma el relevo)
       this.currentLeaderSkin = this.broObject.texture.key; 
       this.monkeySprite.setTexture(this.currentLeaderSkin);
+
+      if (this.currentLeaderSkin === 'brhulk') this.monkeySprite.setScale(2.6);
+      else this.monkeySprite.setScale(2.0);
       
+      // Reproducir animación correcta
       // Reproducir animación correcta
       if (this.currentLeaderSkin === 'broku') this.monkeySprite.play('climbBroku');
       else if (this.currentLeaderSkin === 'monkeyBro') this.monkeySprite.play('climbBro');
-      else this.monkeySprite.play('climb');
+      else if (this.currentLeaderSkin === 'monkey') this.monkeySprite.play('climb'); // Añadido por seguridad
+      else if (this.currentLeaderSkin === 'brhulk') this.monkeySprite.play('climbBrhulk');
+      
 
       this.player.x = this.broObject.x; this.player.y = this.broObject.y;
       this.broObject.destroy(); this.broObject = null;
