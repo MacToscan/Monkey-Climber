@@ -33,6 +33,15 @@ const SKINS = [
     scaleShop: 2.3 // Ajustado un pelin
   },
 
+  { 
+    id: 'brogeta', 
+    name: 'Brogeta', 
+    family: 'Dragon Broll', 
+    price: 600, 
+    shopImg: 'figureBrogeta', 
+    scaleShop: 2.3 
+  },
+
   // --- FAMILIA: MARBREL ---
   { 
     id: 'brhulk', 
@@ -40,6 +49,16 @@ const SKINS = [
     family: 'Marbrel', // <--- ¡Nombre actualizado!
     price: 5, 
     shopImg: 'figureBrhulk', 
+    scaleShop: 2.5 
+  },
+
+  // ... (después de Brhulk)
+  { 
+    id: 'brolverine', 
+    name: 'Brolverine', 
+    family: 'Marbrel', 
+    price: 200, // Un poco más caro que Brhulk
+    shopImg: 'figureBrolverine', 
     scaleShop: 2.5 
   }
 ];
@@ -114,7 +133,9 @@ class ShopScene extends Phaser.Scene {
     this.load.image('figureClimber', '/monkeyclimber-figure.png');
     this.load.image('figureBro', '/monkeybro-figure.png');
     this.load.image('figureBroku', '/broku-figure.png');
+    this.load.image('figureBrogeta', '/brogeta-figure.png');
     this.load.image('figureBrhulk', '/brhulk-figure.png');
+    this.load.image('figureBrolverine', '/brolverine-figure.png');
   }
 
   // Recibimos 'data' al iniciar (aquí viene la posición del scroll guardada)
@@ -310,12 +331,16 @@ class GameScene extends Phaser.Scene {
     this.load.spritesheet('arana', '/arana.png', { frameWidth: 64, frameHeight: 64 });
     this.load.spritesheet('abeja', '/bee.png', { frameWidth: 40, frameHeight: 40 });
     this.load.spritesheet('broku', '/broku.png', { frameWidth: 40, frameHeight: 40 });
+    this.load.spritesheet('brogeta', '/brogeta.png', { frameWidth: 40, frameHeight: 40 });
     this.load.spritesheet('brhulk', '/brhulk.png', { frameWidth: 34, frameHeight: 34 });
+    this.load.spritesheet('brolverine', '/brolverine.png', { frameWidth: 40, frameHeight: 40 });
     //Los que están en la tienda
     this.load.image('figureClimber', '/monkeyclimber-figure.png');
     this.load.image('figureBro', '/monkeybro-figure.png');
     this.load.image('figureBroku', '/broku-figure.png');
+    this.load.image('figureBrogeta', '/brogeta-figure.png');
     this.load.image('figureBrhulk', '/brhulk-figure.png');
+    this.load.image('figureBrolverine', '/brolverine-figure.png');
   }
 
   create() {
@@ -373,10 +398,21 @@ class GameScene extends Phaser.Scene {
             this.anims.create({ 
               key: 'climbBroku', 
               frames: this.anims.generateFrameNumbers('broku', { start: 0, end: 4 }), 
-              rameRate: 10, 
+              frameRate: 10, 
               repeat: -1 });
         }
     }
+
+    if (this.textures.exists('brogeta')) {
+      if (!this.anims.exists('climbBrogeta')) {
+          this.anims.create({ 
+              key: 'climbBrogeta', 
+              frames: this.anims.generateFrameNumbers('brogeta', { start: 0, end: 4 }), 
+              frameRate: 10, 
+              repeat: -1 
+          });
+      }
+  }
     if (this.textures.exists('brhulk')) {
       if (!this.anims.exists('climbBrhulk')) {
           this.anims.create({ 
@@ -386,6 +422,17 @@ class GameScene extends Phaser.Scene {
               repeat: -1 
           });
       }
+
+      if (this.textures.exists('brolverine')) {
+        if (!this.anims.exists('climbBrolverine')) {
+            this.anims.create({ 
+                key: 'climbBrolverine', 
+                frames: this.anims.generateFrameNumbers('brolverine', { start: 0, end: 4 }), 
+                frameRate: 10, 
+                repeat: -1 
+            });
+        }
+    }
   }
 
     if (!this.anims.exists('crawl')) {
@@ -429,7 +476,9 @@ class GameScene extends Phaser.Scene {
     if (spriteKey === 'monkey') this.monkeySprite.play('climb');
     else if (spriteKey === 'monkeyBro') this.monkeySprite.play('climbBro');
     else if (spriteKey === 'broku') this.monkeySprite.play('climbBroku');
+    else if (spriteKey === 'brogeta') this.monkeySprite.play('climbBrogeta');
     else if (spriteKey === 'brhulk') this.monkeySprite.play('climbBrhulk');
+    else if (spriteKey === 'brolverine') this.monkeySprite.play('climbBrolverine');
 
     this.player = this.add.container(centerX, height * 0.75, [this.monkeySprite])
     this.physics.add.existing(this.player)
@@ -887,7 +936,7 @@ class GameScene extends Phaser.Scene {
     this.hasBro = true; 
     
     // 1. ESCALA: Si es Brhulk lo ponemos gigante (2.6), si no normal (2.0)
-    const scale = (s === 'brhulk') ? 2.2 : 2.0;
+    const scale = (s === 'brhulk') ? 2.4 : 2.2;
 
     // Crear el objeto
     this.broObject = this.add.sprite(this.player.x, this.player.y + 100, s).setScale(scale); 
@@ -895,14 +944,23 @@ class GameScene extends Phaser.Scene {
     
     // 2. ANIMACIÓN: Elegir la correcta según quién sea
     if (s === 'broku' && this.anims.exists('climbBroku')) {
+      this.broObject.setScale(2.3);
         this.broObject.play('climbBroku');
     } 
+    else if (s === 'brogeta' && this.anims.exists('climbBrogeta')) {
+      this.broObject.setScale(2.2); // Tamaño estándar
+      this.broObject.play('climbBrogeta');
+  }
     else if (s === 'monkeyBro') {
         this.broObject.play('climbBro');
     } 
     else if (s === 'brhulk' && this.anims.exists('climbBrhulk')) { // <--- ¡ESTO FALTABA!
         this.broObject.play('climbBrhulk');
     } 
+    else if (s === 'brolverine' && this.anims.exists('climbBrolverine')) {
+      this.broObject.setScale(2.3); // Un pelín más ancho por las garras
+      this.broObject.play('climbBrolverine');
+  }
     else {
         // Fallback: Mono normal
         this.broObject.play('climb');
@@ -929,7 +987,13 @@ class GameScene extends Phaser.Scene {
       else if (this.currentLeaderSkin === 'monkeyBro') this.monkeySprite.play('climbBro');
       else if (this.currentLeaderSkin === 'monkey') this.monkeySprite.play('climb'); // Añadido por seguridad
       else if (this.currentLeaderSkin === 'brhulk') this.monkeySprite.play('climbBrhulk');
-      
+      // ... (else if brhulk...)
+      else if (this.currentLeaderSkin === 'brolverine') {this.monkeySprite.play('climbBrolverine');this.monkeySprite.setScale(2.2);}
+      // ... (else if broku...)
+      else if (this.currentLeaderSkin === 'brogeta') {
+        this.monkeySprite.play('climbBrogeta');
+        this.monkeySprite.setScale(2.2); // O 2.0 si lo quieres normal
+    }
 
       this.player.x = this.broObject.x; this.player.y = this.broObject.y;
       this.broObject.destroy(); this.broObject = null;
