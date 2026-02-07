@@ -63,6 +63,15 @@ const SKINS = [
     scaleShop: 2.5 
   },
 
+  { 
+    id: 'brusty', 
+    name: 'Brusty', 
+    family: 'The Simpsbron', 
+    price: 150, // Un poco más caro que Bromer
+    shopImg: 'figureBrusty', 
+    scaleShop: 2.5 
+  },
+
   // --- FAMILIA: MARBREL ---
   { 
     id: 'brhulk', 
@@ -159,6 +168,7 @@ class ShopScene extends Phaser.Scene {
     this.load.image('figureBrhulk', '/brhulk-figure.png');
     this.load.image('figureBrolverine', '/brolverine-figure.png');
     this.load.image('figureBromer', '/bromer-figure.png');
+    this.load.image('figureBrusty', '/brusty-figure.png');
   }
 
   // Recibimos 'data' al iniciar (aquí viene la posición del scroll guardada)
@@ -359,6 +369,8 @@ class GameScene extends Phaser.Scene {
     this.load.spritesheet('brhulk', '/brhulk.png', { frameWidth: 34, frameHeight: 34 });
     this.load.spritesheet('brolverine', '/brolverine.png', { frameWidth: 40, frameHeight: 40 });
     this.load.spritesheet('bromer', '/bromer.png', { frameWidth: 40, frameHeight: 40 });
+    this.load.spritesheet('brusty', '/brusty.png', { frameWidth: 40, frameHeight: 40 });
+
     //Los que están en la tienda
     this.load.image('figureClimber', '/monkeyclimber-figure.png');
     this.load.image('figureBro', '/monkeybro-figure.png');
@@ -368,6 +380,7 @@ class GameScene extends Phaser.Scene {
     this.load.image('figureBrhulk', '/brhulk-figure.png');
     this.load.image('figureBrolverine', '/brolverine-figure.png');
     this.load.image('figureBromer', '/bromer-figure.png');
+    this.load.image('figureBrusty', '/brusty-figure.png');
   }
 
   create() {
@@ -483,6 +496,17 @@ class GameScene extends Phaser.Scene {
     }
 }
 
+if (this.textures.exists('brusty')) {
+    if (!this.anims.exists('climbBrusty')) {
+        this.anims.create({ 
+            key: 'climbBrusty', 
+            frames: this.anims.generateFrameNumbers('brusty', { start: 0, end: 4 }), 
+            frameRate: 10, 
+            repeat: -1 
+        });
+    }
+}
+
     if (!this.anims.exists('crawl')) {
       this.anims.create({ key: 'crawl', frames: this.anims.generateFrameNumbers('oruga', { start: 0, end: 1 }), frameRate: 4, repeat: -1 });
     }
@@ -529,6 +553,7 @@ class GameScene extends Phaser.Scene {
     else if (spriteKey === 'brhulk') this.monkeySprite.play('climbBrhulk');
     else if (spriteKey === 'brolverine') this.monkeySprite.play('climbBrolverine');
     else if (spriteKey === 'bromer') this.monkeySprite.play('climbBromer');
+    else if (spriteKey === 'brusty') this.monkeySprite.play('climbBrusty');
 
     this.player = this.add.container(centerX, height * 0.75, [this.monkeySprite])
     this.physics.add.existing(this.player)
@@ -1021,7 +1046,11 @@ class GameScene extends Phaser.Scene {
     else if (s === 'bromer' && this.anims.exists('climbBromer')) {
       this.broObject.setScale(2.2); 
       this.broObject.play('climbBromer');
-  }
+    }
+    else if (s === 'brusty' && this.anims.exists('climbBrusty')) {
+    this.broObject.setScale(2.2); 
+    this.broObject.play('climbBrusty');
+    }
     else {
         // Fallback: Mono normal
         this.broObject.play('climb');
@@ -1062,7 +1091,11 @@ class GameScene extends Phaser.Scene {
       else if (this.currentLeaderSkin === 'bromer') {
         this.monkeySprite.play('climbBromer');
         this.monkeySprite.setScale(2.2);
-    }
+      }
+      else if (this.currentLeaderSkin === 'brusty') {
+        this.monkeySprite.play('climbBrusty');
+        this.monkeySprite.setScale(2.2);
+      }
 
       this.player.x = this.broObject.x; this.player.y = this.broObject.y;
       this.broObject.destroy(); this.broObject = null;
