@@ -12,7 +12,7 @@ const SKINS = [
     family: 'Principales', 
     price: 0, 
     shopImg: 'figureClimber', 
-    scaleShop: 2.3 
+    scaleShop: 2.5 
   },
   { 
     id: 'monkeyBro', 
@@ -20,7 +20,7 @@ const SKINS = [
     family: 'Principales', 
     price: 2, 
     shopImg: 'figureBro', 
-    scaleShop: 2.3 
+    scaleShop: 2.5 
   },
 
   // --- FAMILIA: DRAGON BROLL ---
@@ -30,7 +30,7 @@ const SKINS = [
     family: 'Dragon Broll', 
     price: 5, 
     shopImg: 'figureBroku', 
-    scaleShop: 2.3 // Ajustado un pelin
+    scaleShop: 2.5 // Ajustado un pelin
   },
 
   { 
@@ -39,17 +39,38 @@ const SKINS = [
     family: 'Dragon Broll', 
     price: 600, 
     shopImg: 'figureBrogeta', 
-    scaleShop: 2.3 
+    scaleShop: 2.5 
+  },
+
+  // ... (después de Brogeta) ...
+  { 
+    id: 'broccolo', 
+    name: 'Broccolo', 
+    family: 'Dragon Broll', 
+    price: 50, 
+    shopImg: 'figureBroccolo', 
+    scaleShop: 2.8 
+  },
+
+
+  // --- FAMILIA: THE SIMPSBRON ---
+  { 
+    id: 'bromer', 
+    name: 'Bromer', 
+    family: 'The Simpsbron', 
+    price: 100, 
+    shopImg: 'figureBromer', 
+    scaleShop: 2.5 
   },
 
   // --- FAMILIA: MARBREL ---
   { 
     id: 'brhulk', 
     name: 'Brhulk', 
-    family: 'Marbrel', // <--- ¡Nombre actualizado!
+    family: 'Marbrel', 
     price: 5, 
     shopImg: 'figureBrhulk', 
-    scaleShop: 2.5 
+    scaleShop: 2.8 
   },
 
   // ... (después de Brhulk)
@@ -59,7 +80,7 @@ const SKINS = [
     family: 'Marbrel', 
     price: 200, // Un poco más caro que Brhulk
     shopImg: 'figureBrolverine', 
-    scaleShop: 2.5 
+    scaleShop: 2.8 
   }
 ];
 
@@ -134,8 +155,10 @@ class ShopScene extends Phaser.Scene {
     this.load.image('figureBro', '/monkeybro-figure.png');
     this.load.image('figureBroku', '/broku-figure.png');
     this.load.image('figureBrogeta', '/brogeta-figure.png');
+    this.load.image('figureBroccolo', '/broccolo-figure.png');
     this.load.image('figureBrhulk', '/brhulk-figure.png');
     this.load.image('figureBrolverine', '/brolverine-figure.png');
+    this.load.image('figureBromer', '/bromer-figure.png');
   }
 
   // Recibimos 'data' al iniciar (aquí viene la posición del scroll guardada)
@@ -332,15 +355,19 @@ class GameScene extends Phaser.Scene {
     this.load.spritesheet('abeja', '/bee.png', { frameWidth: 40, frameHeight: 40 });
     this.load.spritesheet('broku', '/broku.png', { frameWidth: 40, frameHeight: 40 });
     this.load.spritesheet('brogeta', '/brogeta.png', { frameWidth: 40, frameHeight: 40 });
+    this.load.spritesheet('broccolo', '/broccolo.png', { frameWidth: 40, frameHeight: 40 });
     this.load.spritesheet('brhulk', '/brhulk.png', { frameWidth: 34, frameHeight: 34 });
     this.load.spritesheet('brolverine', '/brolverine.png', { frameWidth: 40, frameHeight: 40 });
+    this.load.spritesheet('bromer', '/bromer.png', { frameWidth: 40, frameHeight: 40 });
     //Los que están en la tienda
     this.load.image('figureClimber', '/monkeyclimber-figure.png');
     this.load.image('figureBro', '/monkeybro-figure.png');
     this.load.image('figureBroku', '/broku-figure.png');
     this.load.image('figureBrogeta', '/brogeta-figure.png');
+    this.load.image('figureBroccolo', '/broccolo-figure.png');
     this.load.image('figureBrhulk', '/brhulk-figure.png');
     this.load.image('figureBrolverine', '/brolverine-figure.png');
+    this.load.image('figureBromer', '/bromer-figure.png');
   }
 
   create() {
@@ -413,6 +440,17 @@ class GameScene extends Phaser.Scene {
           });
       }
   }
+
+  if (this.textures.exists('broccolo')) {
+    if (!this.anims.exists('climbBroccolo')) {
+        this.anims.create({ 
+            key: 'climbBroccolo', 
+            frames: this.anims.generateFrameNumbers('broccolo', { start: 0, end: 4 }), 
+            frameRate: 10, 
+            repeat: -1 
+        });
+    }
+}
     if (this.textures.exists('brhulk')) {
       if (!this.anims.exists('climbBrhulk')) {
           this.anims.create({ 
@@ -434,6 +472,16 @@ class GameScene extends Phaser.Scene {
         }
     }
   }
+  if (this.textures.exists('bromer')) {
+    if (!this.anims.exists('climbBromer')) {
+        this.anims.create({ 
+            key: 'climbBromer', 
+            frames: this.anims.generateFrameNumbers('bromer', { start: 0, end: 4 }), 
+            frameRate: 10, 
+            repeat: -1 
+        });
+    }
+}
 
     if (!this.anims.exists('crawl')) {
       this.anims.create({ key: 'crawl', frames: this.anims.generateFrameNumbers('oruga', { start: 0, end: 1 }), frameRate: 4, repeat: -1 });
@@ -477,8 +525,10 @@ class GameScene extends Phaser.Scene {
     else if (spriteKey === 'monkeyBro') this.monkeySprite.play('climbBro');
     else if (spriteKey === 'broku') this.monkeySprite.play('climbBroku');
     else if (spriteKey === 'brogeta') this.monkeySprite.play('climbBrogeta');
+    else if (spriteKey === 'broccolo') this.monkeySprite.play('climbBroccolo');
     else if (spriteKey === 'brhulk') this.monkeySprite.play('climbBrhulk');
     else if (spriteKey === 'brolverine') this.monkeySprite.play('climbBrolverine');
+    else if (spriteKey === 'bromer') this.monkeySprite.play('climbBromer');
 
     this.player = this.add.container(centerX, height * 0.75, [this.monkeySprite])
     this.physics.add.existing(this.player)
@@ -927,6 +977,8 @@ class GameScene extends Phaser.Scene {
   }
   collectBanana(_, b) { b.destroy(); this.sessionBananas++; this.totalBananas++; this.bananaText.setText('🍌 ' + this.sessionBananas); localStorage.setItem('monkey_bananas', this.totalBananas); }
   collectChili(_, c) { c.destroy(); if (this.isTurbo) return; this.isTurbo = true; this.gameSpeed += 400; this.monkeySprite.setTint(0xff4500); this.time.delayedCall(6000, () => { this.gameSpeed -= 400; this.monkeySprite.clearTint(); this.isTurbo = false; }); }
+  
+  
   rescueBro(_, b) { 
     const s = b.getData('skin'); 
     b.destroy(); 
@@ -935,8 +987,12 @@ class GameScene extends Phaser.Scene {
     
     this.hasBro = true; 
     
-    // 1. ESCALA: Si es Brhulk lo ponemos gigante (2.6), si no normal (2.0)
-    const scale = (s === 'brhulk') ? 2.4 : 2.2;
+    // 1. ESCALA: Si es Brhulk lo ponemos gigante (2.4), si no normal (2.2 o 2.0)
+    // Ajustamos escalas por defecto
+    let scale = 2.0;
+    if (s === 'brhulk') scale = 2.4;
+    else if (['broku', 'brogeta', 'broccolo', 'brolverine'].includes(s)) scale = 2.2; 
+    else scale = 2.0; // Monos normales
 
     // Crear el objeto
     this.broObject = this.add.sprite(this.player.x, this.player.y + 100, s).setScale(scale); 
@@ -944,22 +1000,27 @@ class GameScene extends Phaser.Scene {
     
     // 2. ANIMACIÓN: Elegir la correcta según quién sea
     if (s === 'broku' && this.anims.exists('climbBroku')) {
-      this.broObject.setScale(2.3);
         this.broObject.play('climbBroku');
     } 
     else if (s === 'brogeta' && this.anims.exists('climbBrogeta')) {
-      this.broObject.setScale(2.2); // Tamaño estándar
-      this.broObject.play('climbBrogeta');
-  }
+        this.broObject.play('climbBrogeta');
+    }
+    else if (s === 'broccolo' && this.anims.exists('climbBroccolo')) { 
+        this.broObject.play('climbBroccolo');
+    }
     else if (s === 'monkeyBro') {
         this.broObject.play('climbBro');
     } 
-    else if (s === 'brhulk' && this.anims.exists('climbBrhulk')) { // <--- ¡ESTO FALTABA!
+    else if (s === 'brhulk' && this.anims.exists('climbBrhulk')) { 
         this.broObject.play('climbBrhulk');
     } 
     else if (s === 'brolverine' && this.anims.exists('climbBrolverine')) {
-      this.broObject.setScale(2.3); // Un pelín más ancho por las garras
-      this.broObject.play('climbBrolverine');
+        this.broObject.play('climbBrolverine');
+    }
+
+    else if (s === 'bromer' && this.anims.exists('climbBromer')) {
+      this.broObject.setScale(2.2); 
+      this.broObject.play('climbBromer');
   }
     else {
         // Fallback: Mono normal
@@ -993,6 +1054,14 @@ class GameScene extends Phaser.Scene {
       else if (this.currentLeaderSkin === 'brogeta') {
         this.monkeySprite.play('climbBrogeta');
         this.monkeySprite.setScale(2.2); // O 2.0 si lo quieres normal
+      }
+      else if (this.currentLeaderSkin === 'broccolo') {
+      this.monkeySprite.play('climbBroccolo');
+      this.monkeySprite.setScale(2.2);
+      }
+      else if (this.currentLeaderSkin === 'bromer') {
+        this.monkeySprite.play('climbBromer');
+        this.monkeySprite.setScale(2.2);
     }
 
       this.player.x = this.broObject.x; this.player.y = this.broObject.y;
