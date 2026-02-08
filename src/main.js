@@ -71,6 +71,15 @@ const SKINS = [
     shopImg: 'figureBrusty', 
     scaleShop: 2.5 
   },
+  // ... (después de Brusty) ...
+  { 
+    id: 'bort', 
+    name: 'Bort', 
+    family: 'The Simpsbron', 
+    price: 12, 
+    shopImg: 'figureBort', 
+    scaleShop: 2.3 
+  },
 
   // --- FAMILIA: MARBREL ---
   { 
@@ -87,10 +96,19 @@ const SKINS = [
     id: 'brolverine', 
     name: 'Brolverine', 
     family: 'Marbrel', 
-    price: 200, // Un poco más caro que Brhulk
+    price: 20, // Un poco más caro que Brhulk
     shopImg: 'figureBrolverine', 
     scaleShop: 2.8 
-  }
+  },
+  // ... (después de Brolverine) ...
+  { 
+    id: 'spiderbro', // ID en minúsculas y junto para evitar líos
+    name: 'Spider-Bro', 
+    family: 'Marbrel', 
+    price: 30, // Un precio heroico
+    shopImg: 'figureSpiderBro', 
+    scaleShop: 2.8 
+  },
 ];
 
 // ================== ESCENA 1: MENÚ PRINCIPAL ==================
@@ -167,8 +185,10 @@ class ShopScene extends Phaser.Scene {
     this.load.image('figureBroccolo', '/broccolo-figure.png');
     this.load.image('figureBrhulk', '/brhulk-figure.png');
     this.load.image('figureBrolverine', '/brolverine-figure.png');
+    this.load.image('figureSpiderBro', '/spider-bro-figure.png');
     this.load.image('figureBromer', '/bromer-figure.png');
     this.load.image('figureBrusty', '/brusty-figure.png');
+    this.load.image('figureBort', '/bort-figure.png');
   }
 
   // Recibimos 'data' al iniciar (aquí viene la posición del scroll guardada)
@@ -366,10 +386,12 @@ class GameScene extends Phaser.Scene {
     this.load.spritesheet('broku', '/broku.png', { frameWidth: 40, frameHeight: 40 });
     this.load.spritesheet('brogeta', '/brogeta.png', { frameWidth: 40, frameHeight: 40 });
     this.load.spritesheet('broccolo', '/broccolo.png', { frameWidth: 40, frameHeight: 40 });
-    this.load.spritesheet('brhulk', '/brhulk.png', { frameWidth: 34, frameHeight: 34 });
+    this.load.spritesheet('brhulk', '/brhulk.png', { frameWidth: 40, frameHeight: 40 });
     this.load.spritesheet('brolverine', '/brolverine.png', { frameWidth: 40, frameHeight: 40 });
+    this.load.spritesheet('spiderbro', '/spider-bro.png', { frameWidth: 34, frameHeight: 34 });
     this.load.spritesheet('bromer', '/bromer.png', { frameWidth: 40, frameHeight: 40 });
     this.load.spritesheet('brusty', '/brusty.png', { frameWidth: 40, frameHeight: 40 });
+    this.load.spritesheet('bort', '/bort.png', { frameWidth: 40, frameHeight: 40 });
 
     //Los que están en la tienda
     this.load.image('figureClimber', '/monkeyclimber-figure.png');
@@ -379,8 +401,11 @@ class GameScene extends Phaser.Scene {
     this.load.image('figureBroccolo', '/broccolo-figure.png');
     this.load.image('figureBrhulk', '/brhulk-figure.png');
     this.load.image('figureBrolverine', '/brolverine-figure.png');
+    this.load.image('figureSpiderBro', '/spider-bro-figure.png');
     this.load.image('figureBromer', '/bromer-figure.png');
     this.load.image('figureBrusty', '/brusty-figure.png');
+    this.load.image('figureBort', '/bort-figure.png');
+
   }
 
   create() {
@@ -485,6 +510,16 @@ class GameScene extends Phaser.Scene {
         }
     }
   }
+  if (this.textures.exists('spiderbro')) {
+    if (!this.anims.exists('climbSpiderBro')) {
+        this.anims.create({ 
+            key: 'climbSpiderBro', 
+            frames: this.anims.generateFrameNumbers('spiderbro', { start: 0, end: 4 }), 
+            frameRate: 10, 
+            repeat: -1 
+        });
+    }
+}
   if (this.textures.exists('bromer')) {
     if (!this.anims.exists('climbBromer')) {
         this.anims.create({ 
@@ -501,6 +536,16 @@ if (this.textures.exists('brusty')) {
         this.anims.create({ 
             key: 'climbBrusty', 
             frames: this.anims.generateFrameNumbers('brusty', { start: 0, end: 4 }), 
+            frameRate: 10, 
+            repeat: -1 
+        });
+    }
+}
+if (this.textures.exists('bort')) {
+    if (!this.anims.exists('climbBort')) {
+        this.anims.create({ 
+            key: 'climbBort', 
+            frames: this.anims.generateFrameNumbers('bort', { start: 0, end: 4 }), 
             frameRate: 10, 
             repeat: -1 
         });
@@ -552,8 +597,10 @@ if (this.textures.exists('brusty')) {
     else if (spriteKey === 'broccolo') this.monkeySprite.play('climbBroccolo');
     else if (spriteKey === 'brhulk') this.monkeySprite.play('climbBrhulk');
     else if (spriteKey === 'brolverine') this.monkeySprite.play('climbBrolverine');
+    else if (spriteKey === 'spiderbro') this.monkeySprite.play('climbSpiderBro');
     else if (spriteKey === 'bromer') this.monkeySprite.play('climbBromer');
     else if (spriteKey === 'brusty') this.monkeySprite.play('climbBrusty');
+    else if (spriteKey === 'bort') this.monkeySprite.play('climbBort');
 
     this.player = this.add.container(centerX, height * 0.75, [this.monkeySprite])
     this.physics.add.existing(this.player)
@@ -1042,6 +1089,10 @@ if (this.textures.exists('brusty')) {
     else if (s === 'brolverine' && this.anims.exists('climbBrolverine')) {
         this.broObject.play('climbBrolverine');
     }
+    else if (s === 'spiderbro' && this.anims.exists('climbSpiderBro')) {
+        this.broObject.setScale(2.2); 
+        this.broObject.play('climbSpiderBro');
+    }
 
     else if (s === 'bromer' && this.anims.exists('climbBromer')) {
       this.broObject.setScale(2.2); 
@@ -1050,6 +1101,10 @@ if (this.textures.exists('brusty')) {
     else if (s === 'brusty' && this.anims.exists('climbBrusty')) {
     this.broObject.setScale(2.2); 
     this.broObject.play('climbBrusty');
+    }
+    else if (s === 'bort' && this.anims.exists('climbBort')) {
+        this.broObject.setScale(2.0); // Tamaño estándar (o 1.8 si lo quieres más bajito)
+        this.broObject.play('climbBort');
     }
     else {
         // Fallback: Mono normal
@@ -1072,14 +1127,15 @@ if (this.textures.exists('brusty')) {
       else this.monkeySprite.setScale(2.0);
       
       // Reproducir animación correcta
-      // Reproducir animación correcta
       if (this.currentLeaderSkin === 'broku') this.monkeySprite.play('climbBroku');
       else if (this.currentLeaderSkin === 'monkeyBro') this.monkeySprite.play('climbBro');
       else if (this.currentLeaderSkin === 'monkey') this.monkeySprite.play('climb'); // Añadido por seguridad
       else if (this.currentLeaderSkin === 'brhulk') this.monkeySprite.play('climbBrhulk');
-      // ... (else if brhulk...)
       else if (this.currentLeaderSkin === 'brolverine') {this.monkeySprite.play('climbBrolverine');this.monkeySprite.setScale(2.2);}
-      // ... (else if broku...)
+      else if (this.currentLeaderSkin === 'spiderbro') {
+        this.monkeySprite.play('climbSpiderBro');
+        this.monkeySprite.setScale(2.2);
+    }
       else if (this.currentLeaderSkin === 'brogeta') {
         this.monkeySprite.play('climbBrogeta');
         this.monkeySprite.setScale(2.2); // O 2.0 si lo quieres normal
@@ -1095,6 +1151,10 @@ if (this.textures.exists('brusty')) {
       else if (this.currentLeaderSkin === 'brusty') {
         this.monkeySprite.play('climbBrusty');
         this.monkeySprite.setScale(2.2);
+      }
+      else if (this.currentLeaderSkin === 'bort') {
+        this.monkeySprite.play('climbBort');
+        this.monkeySprite.setScale(2.0);
       }
 
       this.player.x = this.broObject.x; this.player.y = this.broObject.y;
