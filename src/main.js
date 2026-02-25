@@ -18,7 +18,7 @@ const SKINS = [
     id: 'monkeyBro', 
     name: 'Climbro',   // <--- Nuevo nombre
     family: 'Principales', 
-    price: 2, 
+    price: 0, 
     shopImg: 'figureBro', 
     scaleShop: 2.5 
   },
@@ -37,7 +37,7 @@ const SKINS = [
     id: 'brogeta', 
     name: 'Brogeta', 
     family: 'Dragon Broll', 
-    price: 600, 
+    price: 6, 
     shopImg: 'figureBrogeta', 
     scaleShop: 2.5 
   },
@@ -47,7 +47,7 @@ const SKINS = [
     id: 'broccolo', 
     name: 'Broccolo', 
     family: 'Dragon Broll', 
-    price: 50, 
+    price: 5, 
     shopImg: 'figureBroccolo', 
     scaleShop: 2.8 
   },
@@ -58,7 +58,7 @@ const SKINS = [
     id: 'bromer', 
     name: 'Bromer', 
     family: 'The Simpsbron', 
-    price: 100, 
+    price: 1, 
     shopImg: 'figureBromer', 
     scaleShop: 2.5 
   },
@@ -67,7 +67,7 @@ const SKINS = [
     id: 'brusty', 
     name: 'Brusty', 
     family: 'The Simpsbron', 
-    price: 150, // Un poco más caro que Bromer
+    price: 1, // Un poco más caro que Bromer
     shopImg: 'figureBrusty', 
     scaleShop: 2.5 
   },
@@ -96,7 +96,7 @@ const SKINS = [
     id: 'brolverine', 
     name: 'Brolverine', 
     family: 'Marbrel', 
-    price: 20, // Un poco más caro que Brhulk
+    price: 2, // Un poco más caro que Brhulk
     shopImg: 'figureBrolverine', 
     scaleShop: 2.8 
   },
@@ -105,7 +105,7 @@ const SKINS = [
     id: 'spiderbro', // ID en minúsculas y junto para evitar líos
     name: 'Spider-Bro', 
     family: 'Marbrel', 
-    price: 30, // Un precio heroico
+    price: 3, // Un precio heroico
     shopImg: 'figureSpiderBro', 
     scaleShop: 2.8 
   },
@@ -115,40 +115,183 @@ const SKINS = [
 class MainMenu extends Phaser.Scene {
   constructor() { super({ key: 'MainMenu' }); }
 
+  preload() {
+    this.load.audio('bgm_menu', '/music_menu.mp3');
+}
+
   create() {
+
+    // --- SISTEMA DE IDIOMA Y AUDIO (¡AQUÍ FALTABA ESTO!) ---
+    this.lang = localStorage.getItem('monkey_lang') || 'en';
+      
+    const savedMute = localStorage.getItem('monkey_mute');
+    if (savedMute !== null) {
+        this.sound.mute = savedMute === 'true'; // Carga el sonido correctamente
+    }
+
+    // --- EFECTO DE APARECER DESDE NEGRO ---
+      this.cameras.main.fadeIn(500, 0, 0, 0);
+      
+      
       this.bg = this.add.rectangle(0, 0, 0, 0, 0x1b1b1b);
+      this.bg = this.add.rectangle(0, 0, 0, 0, 0x1b1b1b);
+
+      // --- 2. AÑADE LA LÓGICA DE MÚSICA AQUÍ ---
+      const menuMusic = this.sound.get('bgm_menu');
+      if (!menuMusic) {
+          this.sound.play('bgm_menu', { loop: true, volume: 0.5 });
+      } else if (!menuMusic.isPlaying) {
+          menuMusic.play({ loop: true, volume: 0.5 });
+      }
       
       const totalBananas = localStorage.getItem('monkey_bananas') || 0;
       const highScore = localStorage.getItem('monkey_highscore') || 0;
 
       this.titleText = this.add.text(0, 0, "CLIMBRO's\nRETRO", { 
-          fontSize: '45px', fill: '#ffd700', fontStyle: 'bold', align: 'center' 
+          fontSize: '45px', fill: '#ffd700', fontStyle: 'bold', align: 'center', fontFamily: 'Courier', stroke: '#000', strokeThickness: 4 
       }).setOrigin(0.5);
 
-      this.bestScoreText = this.add.text(0, 0, `Best: ${highScore}m`, { fontSize: '24px', fill: '#fff' }).setOrigin(0.5);
-      this.bananasText = this.add.text(0, 0, `Total Bananas: ${totalBananas} 🍌`, { fontSize: '24px', fill: '#ffff00' }).setOrigin(0.5);
+      this.bestScoreText = this.add.text(0, 0, this.lang === 'es' ? `Mejor: ${highScore}m` : `Best: ${highScore}m`, { fontSize: '24px', fill: '#fff', fontFamily: 'Courier', fontStyle: 'bold' }).setOrigin(0.5);
+      this.bananasText = this.add.text(0, 0, `${totalBananas} 🍌`, { fontSize: '24px', fill: '#ffff00', fontFamily: 'Courier', fontStyle: 'bold' }).setOrigin(0.5);
 
       // --- BOTÓN PLAY ---
       this.playBtn = this.add.rectangle(0, 0, 260, 60, 0x2d9bf0).setInteractive();
-      this.playText = this.add.text(0, 0, 'PLAY GAME', { fontSize: '28px', fill: '#fff' }).setOrigin(0.5).setInteractive();
+      this.playText = this.add.text(0, 0, this.lang === 'es' ? 'JUGAR' : 'PLAY GAME', { fontSize: '28px', fill: '#fff', fontFamily: 'Courier', fontStyle: 'bold' }).setOrigin(0.5).setInteractive();
 
-      const startGame = () => this.scene.start('GameScene');
+      // --- BOTÓN SHOP ---
+      this.shopBtn = this.add.rectangle(0, 0, 260, 60, 0x2d9bf0).setInteractive();
+      this.shopText = this.add.text(0, 0, this.lang === 'es' ? 'TIENDA' : 'SHOP', { fontSize: '24px', fill: '#fff', fontFamily: 'Courier', fontStyle: 'bold' }).setOrigin(0.5).setInteractive();
+      // ==========================================
+      // --- BOTÓN DE AJUSTES (ENGRANAJE) ---
+      this.settingsBtn = this.add.text(0, 0, '⚙️', { 
+        fontSize: '35px', 
+        padding: { top: 10, bottom: 10, left: 10, right: 10 } 
+    }).setOrigin(1, 0).setInteractive();
+      
+      // --- INTERFAZ DEL MENÚ DE AJUSTES ---
+      this.settingsGroup = this.add.group();
+      
+      // Fondo negro semi-transparente
+      const setBg = this.add.rectangle(this.scale.width*0.5, this.scale.height*0.5, this.scale.width, this.scale.height, 0x000000).setAlpha(0.9).setInteractive();
+      
+      // Título
+      const setTitle = this.add.text(this.scale.width*0.5, this.scale.height * 0.30, this.lang === 'es' ? 'AJUSTES' : 'SETTINGS', { 
+          fontSize: '45px', fill: '#ffd700', fontStyle: 'bold', fontFamily: 'Courier', stroke: '#000', strokeThickness: 6 
+      }).setOrigin(0.5);
+
+     // Variables dinámicas para las etiquetas
+     let t_soundLabel = this.lang === 'es' ? 'SONIDO:' : 'SOUND:';
+     let t_langLabel = this.lang === 'es' ? 'IDIOMA: ESP' : 'LANG: ENG';
+
+     // --- VARIABLE DE CONTROL ABSOLUTO ---
+     let isMuted = this.sound.mute; 
+
+     // 1. Toggle Sonido (Azul, estilo retro)
+     const soundBtnBg = this.add.rectangle(this.scale.width*0.5, this.scale.height * 0.45, 260, 60, 0x2d9bf0).setInteractive();
+     const soundBtnText = this.add.text(this.scale.width*0.5, this.scale.height * 0.45, `${t_soundLabel} ${isMuted ? 'OFF' : 'ON'}`, { 
+         fontSize: '26px', fill: '#fff', fontStyle: 'bold', fontFamily: 'Courier' 
+     }).setOrigin(0.5); // <--- ¡TEXTO SIN INTERACTIVIDAD!
+     
+     // Acción unificada para el botón de sonido
+     const toggleSoundAction = () => {
+         isMuted = !isMuted;               
+         this.sound.mute = isMuted;        
+         localStorage.setItem('monkey_mute', isMuted); 
+         soundBtnText.setText(`${t_soundLabel} ${isMuted ? 'OFF' : 'ON'}`); 
+     };
+
+     soundBtnBg.on('pointerover', () => soundBtnBg.setFillStyle(0x1a7bc0));
+     soundBtnBg.on('pointerout', () => soundBtnBg.setFillStyle(0x2d9bf0));
+     soundBtnBg.on('pointerdown', toggleSoundAction); // <--- SOLO SE ASIGNA AL FONDO
+
+     // 2. Toggle Idioma (Azul, estilo retro)
+     const langBtnBg = this.add.rectangle(this.scale.width*0.5, this.scale.height * 0.60, 260, 60, 0x2d9bf0).setInteractive();
+     const langBtnText = this.add.text(this.scale.width*0.5, this.scale.height * 0.60, t_langLabel, { 
+         fontSize: '26px', fill: '#fff', fontStyle: 'bold', fontFamily: 'Courier' 
+     }).setOrigin(0.5); // <--- ¡TEXTO SIN INTERACTIVIDAD!
+     
+     // Acción unificada para el botón de idioma
+     const toggleLangAction = () => {
+         this.lang = this.lang === 'en' ? 'es' : 'en';
+         localStorage.setItem('monkey_lang', this.lang); // Ahora sí guarda perfecto
+         
+         t_soundLabel = this.lang === 'es' ? 'SONIDO:' : 'SOUND:';
+         t_langLabel = this.lang === 'es' ? 'IDIOMA: ESP' : 'LANG: ENG';
+
+         setTitle.setText(this.lang === 'es' ? 'AJUSTES' : 'SETTINGS');
+         soundBtnText.setText(`${t_soundLabel} ${isMuted ? 'OFF' : 'ON'}`); 
+         langBtnText.setText(t_langLabel);
+
+         const hs = localStorage.getItem('monkey_highscore') || 0;
+         this.bestScoreText.setText(this.lang === 'es' ? `Mejor: ${hs}m` : `Best: ${hs}m`);
+         this.playText.setText(this.lang === 'es' ? 'JUGAR' : 'PLAY GAME');
+         this.shopText.setText(this.lang === 'es' ? 'TIENDA' : 'SHOP');
+     };
+
+     langBtnBg.on('pointerover', () => langBtnBg.setFillStyle(0x1a7bc0));
+     langBtnBg.on('pointerout', () => langBtnBg.setFillStyle(0x2d9bf0));
+     langBtnBg.on('pointerdown', toggleLangAction); // <--- SOLO SE ASIGNA AL FONDO
+
+      // 3. Botón Cerrar (X roja retro)
+      const closeSettingsBtn = this.add.text(this.scale.width*0.5, this.scale.height * 0.75, 'X', { 
+          fontSize: '45px', fill: '#ff4444', fontStyle: 'bold', fontFamily: 'Courier', stroke: '#000', strokeThickness: 6 
+      }).setOrigin(0.5).setInteractive();
+      
+      closeSettingsBtn.on('pointerdown', () => {
+          this.settingsGroup.setVisible(false);
+          this.playBtn.setInteractive();
+          this.shopBtn.setInteractive();
+      });
+
+      // Añadir todo al grupo y ocultarlo de inicio
+      this.settingsGroup.addMultiple([setBg, setTitle, soundBtnBg, soundBtnText, langBtnBg, langBtnText, closeSettingsBtn]);
+      this.settingsGroup.setVisible(false);
+
+      // Acción de abrir ajustes al tocar el engranaje
+      this.settingsBtn.on('pointerdown', () => {
+          this.settingsGroup.setVisible(true);
+          this.playBtn.disableInteractive(); // Bloquear clics del fondo
+          this.shopBtn.disableInteractive();
+      });
+
+     
+      // ==========================================
+      // --- ACCIÓN: QUÉ PASA AL PULSAR PLAY ---
+      const startGame = () => {
+          // Desactivamos AMBOS botones para evitar clics dobles fantasma
+          this.playBtn.disableInteractive();
+          this.playText.disableInteractive();
+          this.shopBtn.disableInteractive();
+          this.shopText.disableInteractive();
+
+          // Hacemos el fundido a negro (500 milisegundos = 0.5 segundos)
+          this.cameras.main.fadeOut(500, 0, 0, 0);
+
+          // Le decimos que cuando termine el fundido, pase a la pantalla de juego
+          this.cameras.main.once('camerafadeoutcomplete', () => {
+              this.scene.start('GameScene');
+          });
+      };
+
+      // --- ACCIÓN: QUÉ PASA AL PULSAR SHOP ---
+      const openShop = () => {
+          this.scene.start('ShopScene');
+      };
+
+      // Asignamos las acciones a los clics del PLAY
       this.playBtn.on('pointerover', () => this.playBtn.setFillStyle(0x1a7bc0));
       this.playBtn.on('pointerout', () => this.playBtn.setFillStyle(0x2d9bf0));
       this.playBtn.on('pointerdown', startGame);
       this.playText.on('pointerdown', startGame);
 
-      // --- BOTÓN SHOP (NUEVO) ---
-      this.shopBtn = this.add.rectangle(0, 0, 260, 60, 0x2d9bf0).setInteractive();
-      this.shopText = this.add.text(0, 0, 'SHOP', { fontSize: '24px', fill: '#fff' }).setOrigin(0.5).setInteractive();
-      
-      const openShop = () => this.scene.start('ShopScene');
+      // Asignamos las acciones a los clics del SHOP
       this.shopBtn.on('pointerover', () => this.shopBtn.setFillStyle(0x1a7bc0));
       this.shopBtn.on('pointerout', () => this.shopBtn.setFillStyle(0x2d9bf0));
       this.shopBtn.on('pointerdown', openShop);
       this.shopText.on('pointerdown', openShop);
 
       this.resize(this.scale.gameSize);
+    
       this.scale.on('resize', this.resize, this);
   }
 
@@ -170,6 +313,9 @@ class MainMenu extends Phaser.Scene {
       // Posición del botón Shop (debajo de Play)
       this.shopBtn.setPosition(centerX, height * 0.72);
       this.shopText.setPosition(centerX, height * 0.72);
+
+      // Posición del engranaje arriba a la derecha (Margen de 20px)
+      if (this.settingsBtn) this.settingsBtn.setPosition(width - 20, 20);
   }
 }
 
@@ -195,6 +341,9 @@ class ShopScene extends Phaser.Scene {
   create(data) {
     const width = this.scale.width;
     const height = this.scale.height;
+
+    // Detectamos el idioma
+    this.lang = localStorage.getItem('monkey_lang') || 'en';
 
     // --- 1. FONDO DE LA TIENDA (Detrás de todo) ---
     this.add.rectangle(0, 0, width, height, 0x1a1a1a)
@@ -270,7 +419,10 @@ class ShopScene extends Phaser.Scene {
                     stampBox.setStrokeStyle(3, 0xffffff);
                     stampBox.setRotation(-0.2);
                     container.add(stampBox);
-                    const stampText = this.add.text(0, 0, 'SELECTED', { fontSize: '16px', fill: '#ffffff', fontStyle: 'bold' }).setOrigin(0.5).setRotation(-0.2);
+                    
+                    // Traducción de ELEGIDO
+                    const stampTextStr = this.lang === 'es' ? 'ELEGIDO' : 'SELECTED';
+                    const stampText = this.add.text(0, 0, stampTextStr, { fontSize: '16px', fill: '#ffffff', fontStyle: 'bold' }).setOrigin(0.5).setRotation(-0.2);
                     container.add(stampText);
                 }
             } else {
@@ -299,6 +451,7 @@ class ShopScene extends Phaser.Scene {
         });
         yPos += 200; 
     }
+    
 
     // --- 3. CABECERA UI (Depth alto para tapar el scroll) ---
     // Creamos un rectángulo sólido arriba del todo
@@ -309,25 +462,16 @@ class ShopScene extends Phaser.Scene {
         .setScrollFactor(0)
         .setDepth(100); 
 
-    // Texto y Botones (Depth 101 para que se vean sobre el rectángulo)
-    this.add.text(width/2, 50, 'SHOP', { fontSize: '40px', fill: '#ffd700', fontStyle: 'bold' })
-        .setOrigin(0.5)
-        .setScrollFactor(0)
-        .setDepth(101);
+        const shopTitle = this.lang === 'es' ? 'TIENDA' : 'SHOP';
+        this.add.text(width/2, 50, shopTitle, { fontSize: '36px', fill: '#ffd700', fontStyle: 'bold' }).setOrigin(0.5).setScrollFactor(0).setDepth(101);
     
-    this.totalBananas = parseInt(localStorage.getItem('monkey_bananas') || 0);
-    this.moneyText = this.add.text(width - 30, 50, `${this.totalBananas} 🍌`, { fontSize: '24px', fill: '#fff' })
-        .setOrigin(1, 0.5)
-        .setScrollFactor(0)
-        .setDepth(101);
+        this.totalBananas = parseInt(localStorage.getItem('monkey_bananas') || 0);
+        this.moneyText = this.add.text(width - 30, 50, `${this.totalBananas} 🍌`, { fontSize: '24px', fill: '#fff' }).setOrigin(1, 0.5).setScrollFactor(0).setDepth(101);
     
-    const exitBtn = this.add.text(30, 50, '< BACK', { fontSize: '24px', fill: '#fff' })
-        .setOrigin(0, 0.5)
-        .setInteractive()
-        .setScrollFactor(0)
-        .setDepth(101);
-    
-    exitBtn.on('pointerdown', () => this.scene.start('MainMenu'));
+        const backText = this.lang === 'es' ? '< ' : '< BACK';
+        const exitBtn = this.add.text(30, 50, backText, { fontSize: '24px', fill: '#fff' }).setOrigin(0, 0.5).setInteractive().setScrollFactor(0).setDepth(101);
+        
+        exitBtn.on('pointerdown', () => this.scene.start('MainMenu'));
 
     // --- 4. CONFIGURACIÓN DE SCROLL ---
     const contentHeight = yPos + 50; 
@@ -406,15 +550,54 @@ class GameScene extends Phaser.Scene {
     this.load.image('figureBrusty', '/brusty-figure.png');
     this.load.image('figureBort', '/bort-figure.png');
 
+    // --- Sonidos del juego ---
+    this.load.audio('bgm_game', '/music_game.mp3');
+    this.load.audio('sfx_collect', '/collect.wav');
+    this.load.audio('sfx_chili', '/chili.wav');
+    this.load.audio('sfx_hit', '/hit.wav');
+    this.load.audio('sfx_gameover', '/hit-1.wav');
+    this.load.audio('sfx_rescue', '/rescue.mp3');
+
   }
 
   create() {
+
+        // --- EFECTO DE APARECER DESDE NEGRO ---
+        this.cameras.main.fadeIn(500, 0, 0, 0);
+
+        // --- 1. GESTIÓN DE AUDIO (CROSSFADE SUAVE) ---
+        const menuMusic = this.sound.get('bgm_menu');
+        
+        if (menuMusic && menuMusic.isPlaying) {
+            this.tweens.add({
+                targets: menuMusic,
+                volume: 0,
+                duration: 1000,
+                onComplete: () => menuMusic.stop() 
+            });
+        }
+    
+        this.gameMusic = this.sound.add('bgm_game', { loop: true, volume: 0 });
+        
+    
+        // --- 2. PREPARAR LOS NUEVOS EFECTOS ---
+        this.collectSound = this.sound.add('sfx_collect', { volume: 0.8 });
+        this.chiliSound = this.sound.add('sfx_chili', { volume: 0.8 });
+        this.hitSound = this.sound.add('sfx_hit', { volume: 1.0 });
+        this.gameOverSound = this.sound.add('sfx_gameover', { volume: 1.0 });
+        this.rescueSound = this.sound.add('sfx_rescue', { volume: 1.0 });
+
+
     const width = this.scale.width;
     const height = this.scale.height;
     const centerX = width * 0.5;
 
+    // Detectamos el idioma
+    this.lang = localStorage.getItem('monkey_lang') || 'en';
+
     // -------- ESTADO --------
     this.isGameOver = false
+    this.gameStarted = false; // <--- NUEVA VARIABLE PARA EL TUTORIAL
     this.score = 0
     this.scoreFloat = 0
     this.level = 0
@@ -427,6 +610,7 @@ class GameScene extends Phaser.Scene {
     this.rocksActivated = false
     this.totalBananas = parseInt(localStorage.getItem('monkey_bananas') || 0)
     this.sessionBananas = 0
+    
 
     // SPAWN
     this.spawnAccumulator = 0;
@@ -435,7 +619,6 @@ class GameScene extends Phaser.Scene {
     this.narrowOffset = 25; 
 
     this.cameras.main.setBackgroundColor('#2d9bf0'); 
-    this.time.addEvent({ delay: 3000, loop: true, callback: () => this.spawnBroItem() });
     
     // --- GESTIÓN DE SKIN EQUIPADA ---
     // Leemos qué skin elegiste en la tienda. Si no hay ninguna, usamos 'monkey'.
@@ -608,13 +791,68 @@ if (this.textures.exists('bort')) {
     this.player.body.setOffset(-15, -22)
     this.player.setDepth(10)
 
-    // -------- HUD --------
-    this.hudBar = this.add.rectangle(centerX, 30, width, 60, 0x000000).setAlpha(0.6).setDepth(100)
-    this.scoreText = this.add.text(20, 15, '0m', { fontSize: '24px', fill: '#fff' }).setDepth(101)
-    this.levelText = this.add.text(centerX, 15, 'Lv 0', { fontSize: '24px', fill: '#00ff00' }).setOrigin(0.5).setDepth(101)
-    this.bananaText = this.add.text(width - 60, 15, '🍌 0', { fontSize: '24px', fill: '#ff0' }).setOrigin(1, 0).setDepth(101)
-    this.exitBtn = this.add.text(width - 30, 50, 'X', { fontSize: '24px', fill: '#ff4444' }).setOrigin(1, 0).setDepth(101).setInteractive();
-    this.exitBtn.on('pointerdown', () => this.scene.start('MainMenu'));
+    // -------- HUD RETRO PREMIUM --------
+    // Fondo oscuro un pelín más intenso
+    this.hudBar = this.add.rectangle(centerX, 30, width, 60, 0x000000).setAlpha(0.7).setDepth(100);
+    // Finísima línea dorada para separar el menú del juego
+    this.hudLine = this.add.rectangle(centerX, 60, width, 2, 0xffd700).setAlpha(0.8).setDepth(101); 
+
+    // Estilo base para todos los textos del marcador
+    const hudStyle = { fontSize: '22px', fontStyle: 'bold', fontFamily: 'Courier', stroke: '#000000', strokeThickness: 4 };
+
+    // Textos alineados matemáticamente al centro vertical de la barra (Y: 30)
+    this.scoreText = this.add.text(15, 30, '0m', { ...hudStyle, fill: '#ffffff' }).setOrigin(0, 0.5).setDepth(102);
+    
+    // Verde más "fósforo" tipo consola retro
+    this.levelText = this.add.text(centerX, 30, 'Lv 0', { ...hudStyle, fill: '#00ffcc' }).setOrigin(0.5).setDepth(102);
+    
+    this.bananaText = this.add.text(width - 65, 30, '🍌 0', { ...hudStyle, fill: '#ffff00' }).setOrigin(1, 0.5).setDepth(102);
+    
+    // Botón de pausa en rojo clásico para que se vea claro que es una acción
+    this.pauseBtn = this.add.text(width - 15, 30, '||', { ...hudStyle, fill: '#ff4444', fontSize: '24px' }).setOrigin(1, 0.5).setDepth(102).setInteractive();
+    this.pauseBtn.on('pointerdown', () => this.pauseGame());
+
+    // --- MENÚ DE PAUSA UI (Oculto al empezar) ---
+    this.pauseGroup = this.add.group();
+    
+    // Fondo oscuro
+    const pauseBg = this.add.rectangle(centerX, height * 0.5, width, height, 0x000000).setAlpha(0.8).setDepth(300).setInteractive(); // setInteractive bloquea clics detrás
+    
+    // Título PAUSED
+    const t_pause = this.lang === 'es' ? 'PAUSA' : 'PAUSED';
+    const pauseTitle = this.add.text(centerX, height * 0.3, 'PAUSED', { fontSize: '50px', fill: '#ffd700', fontStyle: 'bold', fontFamily: 'Courier', stroke: '#000', strokeThickness: 6 }).setOrigin(0.5).setDepth(301);
+
+    // 1. Botón RESUME (Seguir jugando)
+    const t_resume = this.lang === 'es' ? 'CONTINUAR' : 'RESUME';
+    const resumeBtn = this.add.rectangle(centerX, height * 0.40, 220, 55, 0x2d9bf0).setInteractive().setDepth(301);
+    const resumeText = this.add.text(centerX, height * 0.40, t_resume, { fontSize: '26px', fill: '#fff', fontStyle: 'bold', fontFamily: 'Courier' }).setOrigin(0.5).setDepth(302);
+    const resumeAction = () => this.resumeGame();
+    resumeBtn.on('pointerdown', resumeAction); resumeText.on('pointerdown', resumeAction);
+
+    // 2. Botón RETRY (Empezar de nuevo)
+    const t_retry = this.lang === 'es' ? 'REINTENTAR' : 'RETRY';
+    const retryBtn = this.add.rectangle(centerX, height * 0.52, 220, 55, 0x2d9bf0).setInteractive().setDepth(301);
+    const retryText = this.add.text(centerX, height * 0.52, t_retry, { fontSize: '26px', fill: '#fff', fontStyle: 'bold', fontFamily: 'Courier' }).setOrigin(0.5).setDepth(302);
+    const retryAction = () => {
+        if (this.gameMusic) this.gameMusic.stop(); // Paramos música actual
+        this.scene.restart();
+    };
+    retryBtn.on('pointerdown', retryAction); retryText.on('pointerdown', retryAction);
+
+    // 3. Botón QUIT (Menú principal)
+    const t_quit = this.lang === 'es' ? 'SALIR' : 'QUIT';
+    const quitBtn = this.add.rectangle(centerX, height * 0.64, 220, 55, 0xff4444).setInteractive().setDepth(301);
+    const quitText = this.add.text(centerX, height * 0.64, t_quit, { fontSize: '26px', fill: '#fff', fontStyle: 'bold', fontFamily: 'Courier' }).setOrigin(0.5).setDepth(302);
+    const quitAction = () => {
+        if (this.gameMusic) this.gameMusic.stop(); // Paramos música
+        this.scene.start('MainMenu');
+    };
+    quitBtn.on('pointerdown', quitAction); quitText.on('pointerdown', quitAction);
+
+    // Agrupamos todo y lo ocultamos
+    this.pauseGroup.addMultiple([pauseBg, pauseTitle, resumeBtn, resumeText, retryBtn, retryText, quitBtn, quitText]);
+    this.pauseGroup.setVisible(false);
+    this.isPaused = false;
 
     // -------- GRUPOS --------
     this.obstacles = this.physics.add.group(); 
@@ -634,10 +872,100 @@ if (this.textures.exists('bort')) {
     this.physics.add.overlap(this.player, this.chilis, this.collectChili, null, this);
     this.physics.add.overlap(this.player, this.broCollectibles, this.rescueBro, null, this);
 
-    this.time.addEvent({ delay: 1500, loop: true, callback: () => this.spawnBanana() })
-    this.time.addEvent({ delay: 30000, loop: true, callback: () => this.spawnChili() })
+    
+   // --- TUTORIAL UI (ESTILO RETRO PREMIUM) ---
+   const tutY = height - 90; 
+   this.tutorialGroup = this.add.group();
 
-    this.scale.on('resize', this.resize, this);
+   // 1. Carril oscuro sutil con bordes
+   const trackBg = this.add.rectangle(centerX, tutY, width - 100, 16, 0x000000).setAlpha(0.4).setDepth(200);
+   trackBg.setStrokeStyle(2, 0xffffff, 0.2); // Un bordecito blanco muy sutil
+
+   // 2. Línea guía interior
+   const line = this.add.rectangle(centerX, tutY, width - 140, 2, 0xffffff).setAlpha(0.3).setDepth(200);
+   
+   // 3. Flechas (Blancas y limpias)
+   const leftArrows = this.add.text(50, tutY, '<<', { fontSize: '35px', fill: '#ffffff', fontStyle: 'bold', fontFamily: 'Courier' }).setOrigin(0.5).setDepth(200);
+   const rightArrows = this.add.text(width - 50, tutY, '>>', { fontSize: '35px', fill: '#ffffff', fontStyle: 'bold', fontFamily: 'Courier' }).setOrigin(0.5).setDepth(200);
+   
+   // 4. Texto Pulsante (Amarillo Arcade con borde Negro grueso)
+   const t_swipe = this.lang === 'es' ? 'DESLIZA PARA EMPEZAR' : 'SWIPE TO START';
+   const tutText = this.add.text(centerX, tutY - 50, t_swipe, { 
+       fontSize: '28px',
+       fill: '#ffff00', 
+       fontStyle: 'bold', 
+       fontFamily: 'Courier',
+       stroke: '#000000',     // Borde negro para máximo contraste
+       strokeThickness: 8 
+   }).setOrigin(0.5).setDepth(200);
+
+   // Animación de Latido (Suave, más lento y sin desaparecer del todo)
+   this.tweens.add({
+       targets: tutText,
+       alpha: { from: 1, to: 0.2 }, 
+       duration: 800,        // Más lento (800ms en lugar de 500ms)
+       yoyo: true,
+       repeat: -1,
+       ease: 'Sine.easeInOut' // Transición súper suave
+   });
+
+   // Animación de las flechas (se abren un poco hacia los lados suavemente)
+   this.tweens.add({
+       targets: [leftArrows, rightArrows],
+       x: (target) => target === leftArrows ? 35 : width - 35,
+       alpha: { from: 1, to: 0.3 },
+       duration: 600,
+       yoyo: true,
+       repeat: -1,
+       ease: 'Sine.easeInOut'
+   });
+
+   // 5. Botón deslizante (Estilo Joystick Arcade: Blanco y Rojo)
+   const circleShadow = this.add.circle(centerX, tutY + 5, 20, 0x000000).setAlpha(0.5).setDepth(201); 
+   const circleBorder = this.add.circle(centerX, tutY, 22, 0xffffff).setDepth(201); // Borde blanco limpio
+   const circle = this.add.circle(centerX, tutY, 18, 0xe60000).setDepth(201);       // Rojo clásico arcade
+
+   this.tutorialGroup.addMultiple([trackBg, line, leftArrows, rightArrows, tutText, circleShadow, circleBorder, circle]);
+
+   // Animación del deslizador (Un poco más lenta y orgánica)
+   this.tweens.add({
+       targets: [circleShadow, circleBorder, circle],
+       x: { from: centerX - 70, to: centerX + 70 },
+       duration: 900, 
+       yoyo: true, 
+       repeat: -1, 
+       ease: 'Quad.easeInOut' // Acelera y frena en los bordes suavemente
+   });
+
+   this.physics.pause();
+   this.anims.pauseAll();
+
+   // --- PRIMER TOQUE (EMPIEZA EL JUEGO) ---
+   this.input.once('pointerdown', () => {
+       this.gameStarted = true;
+       
+       // ¡DESCONGELAR!
+       this.physics.resume();
+       this.anims.resumeAll();
+       
+       // Quitar el tutorial
+       this.tutorialGroup.clear(true, true);
+       
+       // Empezar Música
+       if (this.gameMusic) {
+           this.gameMusic.play();
+           this.tweens.add({ targets: this.gameMusic, volume: 0.4, duration: 1000 });
+       }
+
+       // Empezar a generar enemigos y plátanos
+       this.time.addEvent({ delay: 3000, loop: true, callback: () => this.spawnBroItem() });
+       this.time.addEvent({ delay: 1500, loop: true, callback: () => this.spawnBanana() });
+       this.time.addEvent({ delay: 30000, loop: true, callback: () => this.spawnChili() });
+   });
+   // -------------------------------------
+
+   this.scale.on('resize', this.resize, this);
+
   }
 
   calcDimensions(width) {
@@ -663,9 +991,13 @@ if (this.textures.exists('bort')) {
     if (this.hudBar) {
         this.hudBar.setPosition(width * 0.5, 30);
         this.hudBar.setSize(width, 60);
+        if (this.hudLine) {
+            this.hudLine.setPosition(width * 0.5, 60);
+            this.hudLine.setSize(width, 2);
+        }
         this.levelText.x = width * 0.5;
-        this.bananaText.x = width - 60;
-        this.exitBtn.x = width - 30; 
+        this.bananaText.x = width - 65;
+        this.pauseBtn.x = width - 15;
     }
     if (this.player) this.player.y = height * 0.75;
   }
@@ -680,7 +1012,8 @@ if (this.textures.exists('bort')) {
   }
 
   update(_, delta) {
-    if (this.isGameOver) return
+    if (!this.gameStarted || this.isPaused) return; // <--- AHORA BLOQUEA SI ESTÁ PAUSADO
+    if (this.isGameOver) return;
 
     const width = this.scale.width;
     const centerX = width * 0.5;
@@ -1047,11 +1380,23 @@ if (this.textures.exists('bort')) {
     this.broCollectibles.add(m);
     m.body.setVelocityY(this.gameSpeed);
   }
-  collectBanana(_, b) { b.destroy(); this.sessionBananas++; this.totalBananas++; this.bananaText.setText('🍌 ' + this.sessionBananas); localStorage.setItem('monkey_bananas', this.totalBananas); }
-  collectChili(_, c) { c.destroy(); if (this.isTurbo) return; this.isTurbo = true; this.gameSpeed += 400; this.monkeySprite.setTint(0xff4500); this.time.delayedCall(6000, () => { this.gameSpeed -= 400; this.monkeySprite.clearTint(); this.isTurbo = false; }); }
+  collectBanana(_, b) { 
+    this.collectSound.play();
+    b.destroy(); 
+    this.sessionBananas++; this.totalBananas++; this.bananaText.setText('🍌 ' + this.sessionBananas); 
+    localStorage.setItem('monkey_bananas', this.totalBananas); }
+  collectChili(_, c) { 
+    this.chiliSound.play();
+    c.destroy(); 
+    if (this.isTurbo) return; 
+    this.isTurbo = true; this.gameSpeed += 400; this.monkeySprite.setTint(0xff4500); 
+    this.time.delayedCall(6000, () => { this.gameSpeed -= 400; 
+    this.monkeySprite.clearTint(); 
+    this.isTurbo = false; }); }
   
   
   rescueBro(_, b) { 
+    this.rescueSound.play();
     const s = b.getData('skin'); 
     b.destroy(); 
     
@@ -1117,6 +1462,7 @@ if (this.textures.exists('bort')) {
   hit() {
     if (this.isInvulnerable) return;
     if (this.hasBro && this.broObject) {
+      this.hitSound.play();
       this.hasBro = false; this.cameras.main.flash(300, 255, 255, 255);
       
       // Cambio de skin al ser golpeado (el bro toma el relevo)
@@ -1167,26 +1513,115 @@ if (this.textures.exists('bort')) {
     this.triggerGameOver('GAME OVER!');
   }
 
-  triggerGameOver(text) {
-    if (this.isGameOver) return;
-    this.isGameOver = true; this.physics.pause(); this.monkeySprite.stop();
-    this.obstacles.children.iterate(o => { if(o && o.anims) o.stop() });
-    const best = parseInt(localStorage.getItem('monkey_highscore') || 0);
-    if (this.score > best) localStorage.setItem('monkey_highscore', this.score);
-    localStorage.setItem('monkey_bananas', this.totalBananas);
-    const w = this.scale.width; const h = this.scale.height; const cx = w*0.5; const cy = h*0.5;
-    const ov = this.add.rectangle(cx, cy, w, h, 0x000000); ov.setAlpha(0.8).setDepth(999);
-    this.add.text(cx, cy - 100, text, { fontSize: '45px', fill: '#ff4444', fontStyle: 'bold', stroke: '#000', strokeThickness: 6 }).setOrigin(0.5).setDepth(1000);
-    this.add.text(cx, cy - 20, `Score: ${this.score}m`, { fontSize: '28px', fill: '#ffffff' }).setOrigin(0.5).setDepth(1000);
-    this.add.text(cx, cy + 20, `Bananas: ${this.sessionBananas} 🍌`, { fontSize: '28px', fill: '#ffff00' }).setOrigin(0.5).setDepth(1000);
-    const rb = this.add.rectangle(cx, cy + 100, 260, 50, 0x2d9bf0).setInteractive().setDepth(1000);
-    const rt = this.add.text(cx, cy + 100, 'TAP TO REPLAY', { fontSize: '24px', fill: '#fff', fontStyle: 'bold' }).setOrigin(0.5).setInteractive().setDepth(1001);
-    const rf = () => this.scene.restart(); rb.on('pointerdown', rf); rt.on('pointerdown', rf);
-    const mb = this.add.rectangle(cx, cy + 170, 260, 50, 0xff8c00).setInteractive().setDepth(1000);
-    const mt = this.add.text(cx, cy + 170, 'MAIN MENU', { fontSize: '24px', fill: '#fff', fontStyle: 'bold' }).setOrigin(0.5).setInteractive().setDepth(1001);
-    const mf = () => this.scene.start('MainMenu'); mb.on('pointerdown', mf); mt.on('pointerdown', mf);
-  }
+  pauseGame() {
+    // Si el tutorial no ha acabado o si ya estás muerto, no se puede pausar
+    if (!this.gameStarted || this.isGameOver || this.isPaused) return;
+    
+    this.isPaused = true;
+    this.physics.pause();
+    this.anims.pauseAll();
+    
+    // Pausar música suavemente
+    if (this.gameMusic && this.gameMusic.isPlaying) {
+        this.gameMusic.pause();
+    }
+    
+    this.pauseGroup.setVisible(true);
 }
+
+resumeGame() {
+    if (!this.isPaused) return;
+    
+    this.isPaused = false;
+    this.physics.resume();
+    this.anims.resumeAll();
+    
+    // Reanudar música
+    if (this.gameMusic && this.gameMusic.isPaused) {
+        this.gameMusic.resume();
+    }
+    
+    this.pauseGroup.setVisible(false);
+}
+
+triggerGameOver(text) {
+    if (this.isGameOver) return;
+
+    this.gameOverSound.play();
+
+    // --- PARAR MÚSICA AL MORIR ---
+    if (this.gameMusic) this.gameMusic.stop();
+
+    // --- CONGELAR EL JUEGO ---
+    this.isGameOver = true; 
+    this.physics.pause(); 
+    this.monkeySprite.stop();
+    
+    this.obstacles.children.iterate(o => { 
+        if (o && o.anims) o.stop(); 
+    });
+
+    // --- GUARDAR PUNTUACIONES ---
+    const best = parseInt(localStorage.getItem('monkey_highscore') || 0);
+    if (this.score > best) {
+        localStorage.setItem('monkey_highscore', this.score);
+    }
+    localStorage.setItem('monkey_bananas', this.totalBananas);
+
+    // --- MEDIDAS PARA LA UI ---
+    const w = this.scale.width; 
+    const h = this.scale.height; 
+    const cx = w * 0.5; 
+    const cy = h * 0.5;
+
+    // --- FONDO OSCURO ---
+    const ov = this.add.rectangle(cx, cy, w, h, 0x000000); 
+    ov.setAlpha(0.8).setDepth(999);
+
+    // --- TEXTO PRINCIPAL (FELL! o GAME OVER!) ---
+    this.add.text(cx, cy - 100, text, { 
+        fontSize: '45px', 
+        fill: '#ff4444', 
+        fontStyle: 'bold', 
+        stroke: '#000', 
+        strokeThickness: 6,
+        fontFamily: 'Courier'
+    }).setOrigin(0.5).setDepth(1000);
+
+    // --- MARCADOR FINAL ---
+    const t_score = this.lang === 'es' ? 'Puntos' : 'Score';
+    
+    this.add.text(cx, cy - 20, `${t_score}: ${this.score}m`, { 
+        fontSize: '28px', fill: '#ffffff', fontStyle: 'bold', fontFamily: 'Courier' 
+    }).setOrigin(0.5).setDepth(1000);
+    
+    this.add.text(cx, cy + 20, `Bananas: ${this.sessionBananas} 🍌`, { 
+        fontSize: '28px', fill: '#ffff00', fontStyle: 'bold', fontFamily: 'Courier' 
+    }).setOrigin(0.5).setDepth(1000);
+
+    // --- BOTÓN REPLAY ---
+    const t_replay = this.lang === 'es' ? 'TOCA PARA REPETIR' : 'TAP TO REPLAY';
+    const rb = this.add.rectangle(cx, cy + 100, 280, 50, 0x2d9bf0).setInteractive().setDepth(1000);
+    const rt = this.add.text(cx, cy + 100, t_replay, { 
+        fontSize: '22px', fill: '#fff', fontStyle: 'bold', fontFamily: 'Courier' 
+    }).setOrigin(0.5).setInteractive().setDepth(1001);
+    
+    const rf = () => this.scene.restart(); 
+    rb.on('pointerdown', rf); 
+    rt.on('pointerdown', rf);
+
+    // --- BOTÓN MENÚ PRINCIPAL ---
+    const t_menu = this.lang === 'es' ? 'MENÚ PRINCIPAL' : 'MAIN MENU';
+    const mb = this.add.rectangle(cx, cy + 170, 280, 50, 0xff8c00).setInteractive().setDepth(1000);
+    const mt = this.add.text(cx, cy + 170, t_menu, { 
+        fontSize: '22px', fill: '#fff', fontStyle: 'bold', fontFamily: 'Courier' 
+    }).setOrigin(0.5).setInteractive().setDepth(1001);
+    
+    const mf = () => this.scene.start('MainMenu'); 
+    mb.on('pointerdown', mf); 
+    mt.on('pointerdown', mf);
+  }
+} // <--- Cierre de tu clase GameScene
 
 // ================== CONFIG ==================
 const config = {
