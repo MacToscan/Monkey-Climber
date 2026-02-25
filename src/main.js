@@ -111,13 +111,93 @@ const SKINS = [
   },
 ];
 
+// ================== ESCENA 0: SPLASH SCREEN (LOGO COMPLETO) ==================
+class SplashScene extends Phaser.Scene {
+  constructor() { 
+      super({ key: 'SplashScene' }); 
+  }
+
+  preload() {
+      // Cargamos tu imagen a pantalla completa
+      this.load.image('logo_toscandev', '/toscandev.webp');
+  }
+
+  create() {
+      const width = this.scale.width;
+      const height = this.scale.height;
+      const centerX = width * 0.5;
+      const centerY = height * 0.5;
+
+      // Color de fondo por si la imagen tarda un milisegundo en cargar
+      this.cameras.main.setBackgroundColor('#061423'); 
+
+      // Añadimos el póster en el centro
+      this.logo = this.add.image(centerX, centerY, 'logo_toscandev');
+
+      // --- MAGIA: ADAPTAR A PANTALLA COMPLETA SIN DEFORMAR ---
+      const scaleX = width / this.logo.width;
+      const scaleY = height / this.logo.height;
+      const scale = Math.max(scaleX, scaleY); // Coge el lado que necesite más zoom para tapar huecos
+      this.logo.setScale(scale);
+
+      // Empezamos con el logo invisible
+      this.logo.setAlpha(0);
+
+      // --- ANIMACIÓN: APARECER, ESPERAR Y DESAPARECER ---
+      this.tweens.chain({
+          targets: this.logo,
+          tweens: [
+              { alpha: 1, duration: 800, ease: 'Sine.easeInOut' }, // Aparece
+              { alpha: 1, duration: 1500 },                        // Se queda quieto
+              { alpha: 0, duration: 800, ease: 'Sine.easeInOut' }  // Desaparece
+          ],
+          onComplete: () => {
+              // Pasa al Menú Principal
+              this.scene.start('MainMenu');
+          }
+      });
+
+      this.scale.on('resize', this.resize, this);
+  }
+
+  resize(gameSize) {
+      const width = gameSize.width;
+      const height = gameSize.height;
+      if (this.logo) {
+          this.logo.setPosition(width * 0.5, height * 0.5);
+          
+          // Recalculamos la pantalla completa si el jugador gira el móvil
+          const imgWidth = this.logo.texture.getSourceImage().width;
+          const imgHeight = this.logo.texture.getSourceImage().height;
+          const scaleX = width / imgWidth;
+          const scaleY = height / imgHeight;
+          this.logo.setScale(Math.max(scaleX, scaleY));
+      }
+  }
+}
+
 // ================== ESCENA 1: MENÚ PRINCIPAL ==================
 class MainMenu extends Phaser.Scene {
   constructor() { super({ key: 'MainMenu' }); }
 
-  preload() {
-    this.load.audio('bgm_menu', '/music_menu.mp3');
-}
+    preload() {
+        this.load.audio('bgm_menu', '/music_menu.mp3');
+  
+        // --- PRECARGA PARA EL DIORAMA RETRO ---
+        this.load.spritesheet('troncosSheet', '/troncos_final.png', { frameWidth: 256, frameHeight: 256 });
+        this.load.image('figureClimber', '/monkeyclimber-figure.png');
+        this.load.image('figureBro', '/monkeybro-figure.png');
+        this.load.image('figureBroku', '/broku-figure.png');
+        this.load.image('figureBrogeta', '/brogeta-figure.png');
+        this.load.image('figureBroccolo', '/broccolo-figure.png');
+        this.load.image('figureBrhulk', '/brhulk-figure.png');
+        this.load.image('figureBrolverine', '/brolverine-figure.png');
+        this.load.image('figureSpiderBro', '/spider-bro-figure.png');
+        this.load.image('figureBromer', '/bromer-figure.png');
+        this.load.image('figureBrusty', '/brusty-figure.png');
+        this.load.image('figureBort', '/bort-figure.png');
+    }
+
 
   create() {
 
@@ -133,8 +213,63 @@ class MainMenu extends Phaser.Scene {
       this.cameras.main.fadeIn(500, 0, 0, 0);
       
       
-      this.bg = this.add.rectangle(0, 0, 0, 0, 0x1b1b1b);
-      this.bg = this.add.rectangle(0, 0, 0, 0, 0x1b1b1b);
+      // --- 1. FONDO CIELO Y DIORAMA VIVO ---
+      // Cielo azul clásico de tu juego
+      this.bg = this.add.rectangle(this.scale.width*0.5, this.scale.height*0.5, this.scale.width, this.scale.height, 0x2d9bf0).setDepth(-3);
+
+      // Contenedor central para todo el escenario
+      this.dioramaContainer = this.add.container(this.scale.width * 0.5, this.scale.height * 0.5).setDepth(-2);
+
+      // 1.1 El Gran Tronco Central (3 piezas apiladas para cubrir toda la altura)
+      const trunkScale = 1.8;
+      const trunkHeight = 256 * trunkScale;
+      const trunk1 = this.add.sprite(0, 0, 'troncosSheet', 7).setScale(trunkScale);
+      const trunk2 = this.add.sprite(0, -trunkHeight + 2, 'troncosSheet', 6).setScale(trunkScale);
+      const trunk3 = this.add.sprite(0, trunkHeight - 2, 'troncosSheet', 8).setScale(trunkScale);
+      this.dioramaContainer.add([trunk1, trunk2, trunk3]);
+
+      // 1.2 Reparto de Personajes (Coordenadas X e Y relativas al centro del tronco)
+      const chars = [
+          { key: 'figureClimber', x: -60, y: 320, scale: 3.5 },   // Principales
+          { key: 'figureBro', x: 60, y: 320, scale: 3.5 },
+          { key: 'figureBroku', x: -120, y: -150, scale: 2.2 },    // Dragon Broll
+          { key: 'figureBrogeta', x: 120, y: -150, scale: 2.2 },
+          { key: 'figureBroccolo', x: 0, y: -170, scale: 2.2 },
+          { key: 'figureBrhulk', x: 0, y: 0, scale: 2.8 },    // Marbrel (Hulk más grande)
+          { key: 'figureBrolverine', x: 100, y: 0, scale: 2.2 },
+          { key: 'figureSpiderBro', x: -100, y: 0, scale: 2.2 },
+          { key: 'figureBromer', x: -110, y: -340, scale: 2.2 },    // Simpsbron
+          { key: 'figureBrusty', x: 90, y: -340, scale: 2.2 },
+          { key: 'figureBort', x: 0, y: -360, scale: 2.2 }         // Bort asomando arriba
+      ];
+
+      chars.forEach((c, index) => {
+          const sp = this.add.image(c.x, c.y, c.key).setScale(c.scale);
+          
+          // Hacemos que los de la izquierda miren hacia la derecha (hacia el tronco)
+          if (c.x < 0) sp.setFlipX(true); 
+          
+          // Sombra sutil para que destaquen sobre la madera
+          sp.setTint(0xf4f4f4); 
+
+          this.dioramaContainer.add(sp);
+
+          // ¡LA MAGIA! Animación de respiración orgánica para cada uno
+          this.tweens.add({
+              targets: sp,
+              scaleX: c.scale * 1.05,
+              scaleY: c.scale * 1.05,
+              y: c.y - 8,
+              duration: 1500 + Math.random() * 500, // Cada uno respira a un ritmo distinto
+              yoyo: true,
+              repeat: -1,
+              ease: 'Sine.easeInOut',
+              delay: index * 150 // Desfase para que no se muevan todos a la vez como robots
+          });
+      });
+
+      // 1.3 Filtro oscuro por encima de la escena para que los botones y el texto se lean perfectamente
+      this.menuOverlay = this.add.rectangle(this.scale.width*0.5, this.scale.height*0.5, this.scale.width, this.scale.height, 0x000000).setAlpha(0.4).setDepth(-1);
 
       // --- 2. AÑADE LA LÓGICA DE MÚSICA AQUÍ ---
       const menuMusic = this.sound.get('bgm_menu');
@@ -296,34 +431,56 @@ class MainMenu extends Phaser.Scene {
   }
 
   resize(gameSize) {
-      const width = gameSize.width;
-      const height = gameSize.height;
-      const centerX = width * 0.5;
-      
+    const width = gameSize.width;
+    const height = gameSize.height;
+    const centerX = width * 0.5;
+    
+    // 1. FONDOS: Se estiran para cubrir toda la pantalla, sean como sean
+    if (this.bg) {
       this.bg.setPosition(centerX, height * 0.5);
       this.bg.setSize(width, height);
+    }
+    if (this.menuOverlay) {
+        this.menuOverlay.setPosition(centerX, height * 0.5);
+        this.menuOverlay.setSize(width, height);
+    }
 
-      this.titleText.setPosition(centerX, height * 0.20);
-      this.bestScoreText.setPosition(centerX, height * 0.35);
-      this.bananasText.setPosition(centerX, height * 0.40);
-      
-      this.playBtn.setPosition(centerX, height * 0.60);
-      this.playText.setPosition(centerX, height * 0.60);
-      
-      // Posición del botón Shop (debajo de Play)
-      this.shopBtn.setPosition(centerX, height * 0.72);
-      this.shopText.setPosition(centerX, height * 0.72);
+    // 2. DIORAMA: Escalar todo el bloque de personajes junto
+    if (this.dioramaContainer) {
+        this.dioramaContainer.setPosition(centerX, height * 0.5);
+        
+        // Tu tronco original medía 460px (256 * 1.8).
+        // Hacemos que todo el conjunto ocupe el 85% del ancho del móvil que sea (tope 500px para iPad).
+        const targetWidth = Math.min(width * 0.85, 500); 
+        const globalScale = targetWidth / 460;
+        
+        // Al escalar el contenedor, todos tus personajes mantienen sus coordenadas perfectas
+        this.dioramaContainer.setScale(globalScale);
+    }
 
-      // Posición del engranaje arriba a la derecha (Margen de 20px)
-      if (this.settingsBtn) this.settingsBtn.setPosition(width - 20, 20);
-  }
-}
+    // 3. UI: Posiciones verticales relativas para que no se pisen en el iPhone SE
+    this.titleText.setPosition(centerX, height * 0.20);
+    this.bestScoreText.setPosition(centerX, height * 0.33);
+    this.bananasText.setPosition(centerX, height * 0.38);
+    
+    this.playBtn.setPosition(centerX, height * 0.60);
+    this.playText.setPosition(centerX, height * 0.60);
+    
+    this.shopBtn.setPosition(centerX, height * 0.72);
+    this.shopText.setPosition(centerX, height * 0.72);
+
+    if (this.settingsBtn) this.settingsBtn.setPosition(width - 20, 20);
+}}
 
 // ================== ESCENA 2: TIENDA (MEJORADA) ==================
 class ShopScene extends Phaser.Scene {
   constructor() { super({ key: 'ShopScene' }); }
 
   preload() {
+    this.load.audio('bgm_menu', '/music_menu.mp3');
+
+    // --- PRECARGA PARA EL DIORAMA RETRO ---
+    this.load.spritesheet('troncosSheet', '/troncos_final.png', { frameWidth: 256, frameHeight: 256 });
     this.load.image('figureClimber', '/monkeyclimber-figure.png');
     this.load.image('figureBro', '/monkeybro-figure.png');
     this.load.image('figureBroku', '/broku-figure.png');
@@ -335,7 +492,7 @@ class ShopScene extends Phaser.Scene {
     this.load.image('figureBromer', '/bromer-figure.png');
     this.load.image('figureBrusty', '/brusty-figure.png');
     this.load.image('figureBort', '/bort-figure.png');
-  }
+}
 
   // Recibimos 'data' al iniciar (aquí viene la posición del scroll guardada)
   create(data) {
@@ -969,13 +1126,14 @@ if (this.textures.exists('bort')) {
   }
 
   calcDimensions(width) {
-      const minTreeWidth = 384; 
-      const targetTreeWidth = Math.max(minTreeWidth, width * 0.65);
-      let newScale = Math.round(targetTreeWidth / 256 * 2) / 2;
-      this.currentScale = newScale;
-      this.trunkHeight = Math.floor(256 * newScale);
-      this.currentTreeVisualWidth = 256 * newScale;
-  }
+    // El árbol ocupará siempre el 75% del ancho de cualquier pantalla.
+    // Le ponemos un tope de 450px para que en el iPad no parezca un muro gigante.
+    const targetTreeWidth = Math.min(width * 0.88, 550); 
+    
+    this.currentScale = targetTreeWidth / 256; 
+    this.trunkHeight = Math.floor(256 * this.currentScale);
+    this.currentTreeVisualWidth = targetTreeWidth;
+}
 
   resize(gameSize) {
     const width = gameSize.width;
@@ -1625,10 +1783,16 @@ triggerGameOver(text) {
 
 // ================== CONFIG ==================
 const config = {
-  type: Phaser.AUTO, width: '100%', height: '100%', 
-  backgroundColor: '#2d9bf0', pixelArt: true, roundPixels: true,
-  scale: { mode: Phaser.Scale.RESIZE, autoCenter: Phaser.Scale.CENTER_BOTH },
-  physics: { default: 'arcade', arcade: { gravity: { y: 0 }, debug: false } },
-  scene: [MainMenu, ShopScene, GameScene]
-};
-new Phaser.Game(config);
+    type: Phaser.AUTO, 
+    backgroundColor: '#2d9bf0', 
+    pixelArt: true, 
+    roundPixels: true,
+    scale: { 
+        mode: Phaser.Scale.RESIZE, // <--- VOLVEMOS A PANTALLA COMPLETA 100% (Sin cajas ni bandas)
+        width: '100%',
+        height: '100%'
+    },
+    physics: { default: 'arcade', arcade: { gravity: { y: 0 }, debug: false } },
+    scene: [SplashScene, MainMenu, ShopScene, GameScene]
+  };
+  new Phaser.Game(config);

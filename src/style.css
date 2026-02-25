@@ -1,12 +1,13 @@
 /* 1. Reseteo total para eliminar el marco blanco */
 html, body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #2d9bf0; /* El mismo azul de tu cielo para camuflar la carga */
-    overflow: hidden; /* IMPORTANTE: Impide que aparezcan barras de scroll */
-  }
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: #2d9bf0; /* <--- ¡ESTA ES LA CLAVE! El mismo azul del cielo */
+  touch-action: none;
+}
   
   /* 2. Ajustes para el Canvas del juego */
   canvas {
