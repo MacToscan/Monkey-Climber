@@ -51,6 +51,9 @@ const SKINS = [
     shopImg: 'figureBroccolo', 
     scaleShop: 2.8 
   },
+  { id: 'db_soon1', name: '???', family: 'Dragon Broll', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
+  { id: 'db_soon2', name: '???', family: 'Dragon Broll', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
+  { id: 'db_soon3', name: '???', family: 'Dragon Broll', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
 
 
   // --- FAMILIA: THE SIMPSBRON ---
@@ -80,6 +83,9 @@ const SKINS = [
     shopImg: 'figureBort', 
     scaleShop: 2.3 
   },
+  { id: 'sb_soon1', name: '???', family: 'The Simpsbron', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
+  { id: 'sb_soon2', name: '???', family: 'The Simpsbron', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
+  { id: 'sb_soon3', name: '???', family: 'The Simpsbron', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
 
   // --- FAMILIA: MARBREL ---
   { 
@@ -91,7 +97,6 @@ const SKINS = [
     scaleShop: 2.8 
   },
 
-  // ... (después de Brhulk)
   { 
     id: 'brolverine', 
     name: 'Brolverine', 
@@ -100,7 +105,7 @@ const SKINS = [
     shopImg: 'figureBrolverine', 
     scaleShop: 2.8 
   },
-  // ... (después de Brolverine) ...
+
   { 
     id: 'spiderbro', // ID en minúsculas y junto para evitar líos
     name: 'Spider-Bro', 
@@ -109,6 +114,24 @@ const SKINS = [
     shopImg: 'figureSpiderBro', 
     scaleShop: 2.8 
   },
+  { id: 'mb_soon1', name: '???', family: 'Marbrel', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
+  { id: 'mb_soon2', name: '???', family: 'Marbrel', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
+  { id: 'mb_soon3', name: '???', family: 'Marbrel', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
+
+  // --- FAMILIA: MÍTICOS ---
+  { 
+    id: 'spongebrob', 
+    name: 'SpongeBrob', 
+    family: 'Míticos', 
+    price: 10, // ¡Ponle el precio que consideres!
+    shopImg: 'figureSpongeBrob', 
+    scaleShop: 2.8 
+  },
+  { id: 'mt_soon1', name: '???', family: 'Míticos', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
+  { id: 'mt_soon2', name: '???', family: 'Míticos', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
+  { id: 'mt_soon3', name: '???', family: 'Míticos', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
+  { id: 'mt_soon4', name: '???', family: 'Míticos', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
+  { id: 'mt_soon5', name: '???', family: 'Míticos', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
 ];
 
 // ================== ESCENA 0: SPLASH SCREEN (LOGO COMPLETO) ==================
@@ -230,17 +253,17 @@ class MainMenu extends Phaser.Scene {
 
       // 1.2 Reparto de Personajes (Coordenadas X e Y relativas al centro del tronco)
       const chars = [
-          { key: 'figureClimber', x: -60, y: 320, scale: 3.5 },   // Principales
-          { key: 'figureBro', x: 60, y: 320, scale: 3.5 },
+          { key: 'figureClimber', x: -60, y: 350, scale: 3.5 },   // Principales
+          { key: 'figureBro', x: 60, y: 350, scale: 3.5 },
           { key: 'figureBroku', x: -120, y: -150, scale: 2.2 },    // Dragon Broll
           { key: 'figureBrogeta', x: 120, y: -150, scale: 2.2 },
-          { key: 'figureBroccolo', x: 0, y: -170, scale: 2.2 },
-          { key: 'figureBrhulk', x: 0, y: 0, scale: 2.8 },    // Marbrel (Hulk más grande)
+          { key: 'figureBroccolo', x: 0, y: -150, scale: 2.2 },
+          { key: 'figureBrhulk', x: 0, y: 30, scale: 2.8 },    // Marbrel (Hulk más grande)
           { key: 'figureBrolverine', x: 100, y: 0, scale: 2.2 },
-          { key: 'figureSpiderBro', x: -100, y: 0, scale: 2.2 },
-          { key: 'figureBromer', x: -110, y: -340, scale: 2.2 },    // Simpsbron
-          { key: 'figureBrusty', x: 90, y: -340, scale: 2.2 },
-          { key: 'figureBort', x: 0, y: -360, scale: 2.2 }         // Bort asomando arriba
+          { key: 'figureSpiderBro', x: -120, y: 0, scale: 2.2 },
+          { key: 'figureBromer', x: -110, y: -350, scale: 2.2 },    // Simpsbron
+          { key: 'figureBrusty', x: 90, y: -350, scale: 2.2 },
+          { key: 'figureBort', x: 0, y: -380, scale: 2.2 }         // Bort asomando arriba
       ];
 
       chars.forEach((c, index) => {
@@ -282,20 +305,32 @@ class MainMenu extends Phaser.Scene {
       const totalBananas = localStorage.getItem('monkey_bananas') || 0;
       const highScore = localStorage.getItem('monkey_highscore') || 0;
 
-      this.titleText = this.add.text(0, 0, "CLIMBRO's\nRETRO", { 
+      this.titleText = this.add.text(0, 0, "RETRO\nCLIMBRO", { 
           fontSize: '45px', fill: '#ffd700', fontStyle: 'bold', align: 'center', fontFamily: 'Courier', stroke: '#000', strokeThickness: 4 
       }).setOrigin(0.5);
 
       this.bestScoreText = this.add.text(0, 0, this.lang === 'es' ? `Mejor: ${highScore}m` : `Best: ${highScore}m`, { fontSize: '24px', fill: '#fff', fontFamily: 'Courier', fontStyle: 'bold' }).setOrigin(0.5);
       this.bananasText = this.add.text(0, 0, `${totalBananas} 🍌`, { fontSize: '24px', fill: '#ffff00', fontFamily: 'Courier', fontStyle: 'bold' }).setOrigin(0.5);
 
-      // --- BOTÓN PLAY ---
+      // --- BOTÓN PLAY (ESTILO RETRO PRO) ---
+      // 1. Sombra oscura (No se mueve)
+      this.playShadow = this.add.rectangle(0, 0, 260, 60, 0x000000).setOrigin(0.5); 
+      // 2. Botón principal (Con borde blanco grueso)
       this.playBtn = this.add.rectangle(0, 0, 260, 60, 0x2d9bf0).setInteractive();
-      this.playText = this.add.text(0, 0, this.lang === 'es' ? 'JUGAR' : 'PLAY GAME', { fontSize: '28px', fill: '#fff', fontFamily: 'Courier', fontStyle: 'bold' }).setOrigin(0.5).setInteractive();
+      this.playBtn.setStrokeStyle(4, 0xffffff); 
+      // 3. Texto
+      this.playText = this.add.text(0, 0, this.lang === 'es' ? 'JUGAR' : 'PLAY GAME', { 
+          fontSize: '28px', fill: '#fff', fontFamily: 'Courier', fontStyle: 'bold' 
+      }).setOrigin(0.5);
 
-      // --- BOTÓN SHOP ---
+      // --- BOTÓN SHOP (ESTILO RETRO PRO) ---
+      this.shopShadow = this.add.rectangle(0, 0, 260, 60, 0x000000).setOrigin(0.5);
       this.shopBtn = this.add.rectangle(0, 0, 260, 60, 0x2d9bf0).setInteractive();
-      this.shopText = this.add.text(0, 0, this.lang === 'es' ? 'TIENDA' : 'SHOP', { fontSize: '24px', fill: '#fff', fontFamily: 'Courier', fontStyle: 'bold' }).setOrigin(0.5).setInteractive();
+      this.shopBtn.setStrokeStyle(4, 0xffffff);
+      this.shopText = this.add.text(0, 0, this.lang === 'es' ? 'TIENDA' : 'SHOP', { 
+          fontSize: '24px', fill: '#fff', fontFamily: 'Courier', fontStyle: 'bold' 
+      }).setOrigin(0.5); 
+      
       // ==========================================
       // --- BOTÓN DE AJUSTES (ENGRANAJE) ---
       this.settingsBtn = this.add.text(0, 0, '⚙️', { 
@@ -372,7 +407,7 @@ class MainMenu extends Phaser.Scene {
           fontSize: '45px', fill: '#ff4444', fontStyle: 'bold', fontFamily: 'Courier', stroke: '#000', strokeThickness: 6 
       }).setOrigin(0.5).setInteractive();
       
-      closeSettingsBtn.on('pointerdown', () => {
+      closeSettingsBtn.on('pointerup', () => {
           this.settingsGroup.setVisible(false);
           this.playBtn.setInteractive();
           this.shopBtn.setInteractive();
@@ -393,37 +428,68 @@ class MainMenu extends Phaser.Scene {
       // ==========================================
       // --- ACCIÓN: QUÉ PASA AL PULSAR PLAY ---
       const startGame = () => {
-          // Desactivamos AMBOS botones para evitar clics dobles fantasma
-          this.playBtn.disableInteractive();
-          this.playText.disableInteractive();
-          this.shopBtn.disableInteractive();
-          this.shopText.disableInteractive();
+        // Desactivamos los botones para evitar clics dobles fantasma
+        this.playBtn.disableInteractive();
+        this.shopBtn.disableInteractive();
 
-          // Hacemos el fundido a negro (500 milisegundos = 0.5 segundos)
-          this.cameras.main.fadeOut(500, 0, 0, 0);
+        // Hacemos el fundido a negro (500 milisegundos)
+        this.cameras.main.fadeOut(500, 0, 0, 0);
 
-          // Le decimos que cuando termine el fundido, pase a la pantalla de juego
-          this.cameras.main.once('camerafadeoutcomplete', () => {
-              this.scene.start('GameScene');
-          });
-      };
+        // Le decimos que cuando termine el fundido, pase a la pantalla de juego
+        this.cameras.main.once('camerafadeoutcomplete', () => {
+            this.scene.start('GameScene');
+        });
+    };
 
-      // --- ACCIÓN: QUÉ PASA AL PULSAR SHOP ---
-      const openShop = () => {
-          this.scene.start('ShopScene');
-      };
+    // --- ACCIÓN: QUÉ PASA AL PULSAR SHOP ---
+    const openShop = () => {
+        this.scene.start('ShopScene');
+    };
 
-      // Asignamos las acciones a los clics del PLAY
-      this.playBtn.on('pointerover', () => this.playBtn.setFillStyle(0x1a7bc0));
-      this.playBtn.on('pointerout', () => this.playBtn.setFillStyle(0x2d9bf0));
-      this.playBtn.on('pointerdown', startGame);
-      this.playText.on('pointerdown', startGame);
+    // ==========================================
+    // --- EFECTOS DE CLIC 3D (BOTÓN JUGAR) ---
+    this.playBtn.on('pointerover', () => this.playBtn.setFillStyle(0x1a7bc0));
+    
+    this.playBtn.on('pointerout', () => {
+        this.playBtn.setFillStyle(0x2d9bf0);
+        // Si el jugador saca el dedo sin soltar, el botón vuelve a subir
+        this.playBtn.x = this.playShadow.x - 6; this.playBtn.y = this.playShadow.y - 6;
+        this.playText.x = this.playShadow.x - 6; this.playText.y = this.playShadow.y - 6;
+    });
+    
+    this.playBtn.on('pointerdown', () => {
+        // ¡HUNDIR EL BOTÓN! (Se mueve físicamente hacia la sombra)
+        this.playBtn.x = this.playShadow.x; this.playBtn.y = this.playShadow.y;
+        this.playText.x = this.playShadow.x; this.playText.y = this.playShadow.y;
+    });
+    
+    this.playBtn.on('pointerup', () => {
+        // REBOTA HACIA ARRIBA Y EJECUTA LA ACCIÓN
+        this.playBtn.x = this.playShadow.x - 6; this.playBtn.y = this.playShadow.y - 6;
+        this.playText.x = this.playShadow.x - 6; this.playText.y = this.playShadow.y - 6;
+        startGame();
+    });
 
-      // Asignamos las acciones a los clics del SHOP
-      this.shopBtn.on('pointerover', () => this.shopBtn.setFillStyle(0x1a7bc0));
-      this.shopBtn.on('pointerout', () => this.shopBtn.setFillStyle(0x2d9bf0));
-      this.shopBtn.on('pointerdown', openShop);
-      this.shopText.on('pointerdown', openShop);
+    // ==========================================
+    // --- EFECTOS DE CLIC 3D (BOTÓN TIENDA) ---
+    this.shopBtn.on('pointerover', () => this.shopBtn.setFillStyle(0x1a7bc0));
+    
+    this.shopBtn.on('pointerout', () => {
+        this.shopBtn.setFillStyle(0x2d9bf0);
+        this.shopBtn.x = this.shopShadow.x - 6; this.shopBtn.y = this.shopShadow.y - 6;
+        this.shopText.x = this.shopShadow.x - 6; this.shopText.y = this.shopShadow.y - 6;
+    });
+    
+    this.shopBtn.on('pointerdown', () => {
+        this.shopBtn.x = this.shopShadow.x; this.shopBtn.y = this.shopShadow.y;
+        this.shopText.x = this.shopShadow.x; this.shopText.y = this.shopShadow.y;
+    });
+    
+    this.shopBtn.on('pointerup', () => {
+        this.shopBtn.x = this.shopShadow.x - 6; this.shopBtn.y = this.shopShadow.y - 6;
+        this.shopText.x = this.shopShadow.x - 6; this.shopText.y = this.shopShadow.y - 6;
+        openShop();
+    });
 
       this.resize(this.scale.gameSize);
     
@@ -434,41 +500,50 @@ class MainMenu extends Phaser.Scene {
     const width = gameSize.width;
     const height = gameSize.height;
     const centerX = width * 0.5;
+    const centerY = height * 0.5;
     
-    // 1. FONDOS: Se estiran para cubrir toda la pantalla, sean como sean
+    // 1. FONDOS
     if (this.bg) {
-      this.bg.setPosition(centerX, height * 0.5);
+      this.bg.setPosition(centerX, centerY);
       this.bg.setSize(width, height);
     }
     if (this.menuOverlay) {
-        this.menuOverlay.setPosition(centerX, height * 0.5);
+        this.menuOverlay.setPosition(centerX, centerY);
         this.menuOverlay.setSize(width, height);
     }
 
-    // 2. DIORAMA: Escalar todo el bloque de personajes junto
+    // 2. ESCALA GLOBAL (La misma para el árbol y para los textos)
+    const targetWidth = Math.min(width * 0.85, 500); 
+    const globalScale = targetWidth / 460;
+
     if (this.dioramaContainer) {
-        this.dioramaContainer.setPosition(centerX, height * 0.5);
-        
-        // Tu tronco original medía 460px (256 * 1.8).
-        // Hacemos que todo el conjunto ocupe el 85% del ancho del móvil que sea (tope 500px para iPad).
-        const targetWidth = Math.min(width * 0.85, 500); 
-        const globalScale = targetWidth / 460;
-        
-        // Al escalar el contenedor, todos tus personajes mantienen sus coordenadas perfectas
+        this.dioramaContainer.setPosition(centerX, centerY);
         this.dioramaContainer.setScale(globalScale);
     }
 
-    // 3. UI: Posiciones verticales relativas para que no se pisen en el iPhone SE
-    this.titleText.setPosition(centerX, height * 0.20);
-    this.bestScoreText.setPosition(centerX, height * 0.33);
-    this.bananasText.setPosition(centerX, height * 0.38);
-    
-    this.playBtn.setPosition(centerX, height * 0.60);
-    this.playText.setPosition(centerX, height * 0.60);
-    
-    this.shopBtn.setPosition(centerX, height * 0.72);
-    this.shopText.setPosition(centerX, height * 0.72);
+    // --- 3. UI SINCRONIZADA (¡LA MAGIA ESTÁ AQUÍ!) ---
+    // Al multiplicar por 'globalScale', los textos se mueven y separan 
+    // exactamente igual que los monos en cualquier dispositivo.
 
+    // Título: En el hueco entre Simpsbron (-360) y Dragon Broll (-150)
+    this.titleText.setPosition(centerX, centerY - (255 * globalScale));
+    
+    // Puntuaciones: En el hueco entre Dragon Broll (-150) y Marbrel (0)
+    this.bestScoreText.setPosition(centerX, centerY - (85 * globalScale));
+    this.bananasText.setPosition(centerX, centerY - (45 * globalScale));
+    
+    // Botones: En el hueco entre Marbrel (0) y los Monos Principales (+320)
+    const playY = centerY + (130 * globalScale);
+    this.playShadow.setPosition(centerX, playY); // ¡Atornillamos la sombra al centro!
+    this.playBtn.setPosition(centerX - 6, playY - 6); // El botón flota un poco por encima
+    this.playText.setPosition(centerX - 6, playY - 6);
+    
+    const shopY = centerY + (230 * globalScale);
+    this.shopShadow.setPosition(centerX, shopY);
+    this.shopBtn.setPosition(centerX - 6, shopY - 6);
+    this.shopText.setPosition(centerX - 6, shopY - 6);
+
+    // El engranaje de ajustes siempre arriba a la derecha
     if (this.settingsBtn) this.settingsBtn.setPosition(width - 20, 20);
 }}
 
@@ -481,6 +556,7 @@ class ShopScene extends Phaser.Scene {
 
     // --- PRECARGA PARA EL DIORAMA RETRO ---
     this.load.spritesheet('troncosSheet', '/troncos_final.png', { frameWidth: 256, frameHeight: 256 });
+    this.load.image('figureUnknown', '/unknown-figure.png');
     this.load.image('figureClimber', '/monkeyclimber-figure.png');
     this.load.image('figureBro', '/monkeybro-figure.png');
     this.load.image('figureBroku', '/broku-figure.png');
@@ -492,6 +568,7 @@ class ShopScene extends Phaser.Scene {
     this.load.image('figureBromer', '/bromer-figure.png');
     this.load.image('figureBrusty', '/brusty-figure.png');
     this.load.image('figureBort', '/bort-figure.png');
+    this.load.image('figureSpongeBrob', '/spongebrob-figure.png');
 }
 
   // Recibimos 'data' al iniciar (aquí viene la posición del scroll guardada)
@@ -525,88 +602,123 @@ class ShopScene extends Phaser.Scene {
         this.add.text(width/2, yPos, familyName.toUpperCase(), { fontSize: '20px', fill: '#2d9bf0', fontStyle: 'bold' }).setOrigin(0.5);
         yPos += 45;
 
-        // Centrar fila
         const cardWidth = 110; 
         const spacing = 15;
-        const totalRowWidth = (skins.length * cardWidth) + ((skins.length - 1) * spacing);
-        let startX = (width - totalRowWidth) / 2 + (cardWidth / 2);
+        const maxCols = 3; // <--- LÍMITE: 3 tarjetas por fila
 
-        skins.forEach((skin) => {
-            const isUnlocked = unlockedSkins.includes(skin.id);
-            const isEquipped = equippedSkin === skin.id;
+        // Recorremos las skins de esta familia en bloques de 3 en 3
+        for (let i = 0; i < skins.length; i += maxCols) {
+            const rowSkins = skins.slice(i, i + maxCols);
+            
+            // Calculamos el ancho exacto de ESTA fila concreta para centrarla siempre
+            const totalRowWidth = (rowSkins.length * cardWidth) + ((rowSkins.length - 1) * spacing);
+            let startX = (width - totalRowWidth) / 2 + (cardWidth / 2);
 
-            const container = this.add.container(startX, yPos + 60);
+            rowSkins.forEach((skin) => {
+                const isUnlocked = unlockedSkins.includes(skin.id);
+                const isEquipped = equippedSkin === skin.id;
 
-            // Fondo Tarjeta
-            let bgColor = 0x333333;
-            let strokeColor = 0x000000;
-            if (isEquipped) { bgColor = 0x2d9bf0; strokeColor = 0xffffff; } 
-            else if (isUnlocked) { bgColor = 0x317db8; }
+                // --- DIBUJAR TARJETA ---
+                const container = this.add.container(startX, yPos + 60);
 
-            const bg = this.add.rectangle(0, 0, cardWidth, 150, bgColor).setInteractive();
-            bg.setStrokeStyle(isEquipped ? 3 : 2, strokeColor);
-            container.add(bg);
+                if (skin.comingSoon) {
+                    // --- MODO: PRÓXIMAMENTE ---
+                    // Fondo oscuro apagado
+                    const bg = this.add.rectangle(0, 0, cardWidth, 150, 0x222222).setInteractive();
+                    bg.setStrokeStyle(2, 0x444444);
+                    container.add(bg);
 
-            // Imagen
-            if (this.textures.exists(skin.shopImg)) {
-                const sprite = this.add.image(0, -20, skin.shopImg).setScale(skin.scaleShop);
-                container.add(sprite);
-            } else {
-                container.add(this.add.text(0, -25, '?', { fontSize: '30px' }).setOrigin(0.5));
-            }
-
-            // Nombre
-            const nameText = this.add.text(0, 65, skin.name.toUpperCase(), { 
-                fontSize: '16px', fill: '#ffffff', fontStyle: 'bold', fontFamily: 'Courier' 
-            }).setOrigin(0.5);
-            container.add(nameText);
-
-            // Lógica Unlocked / Precio / Selección
-            if (isUnlocked) {
-                bg.on('pointerdown', () => {
-                    if (this.isDragging) return; 
-                    localStorage.setItem('equipped_skin', skin.id);
-                    // ¡AQUÍ ESTÁ EL TRUCO! Guardamos la posición actual antes de reiniciar
-                    const currentScroll = this.cameras.main.scrollY;
-                    this.scene.restart({ savedScroll: currentScroll });
-                });
-
-                if (isEquipped) {
-                    const stampBox = this.add.rectangle(0, 0, 90, 30);
-                    stampBox.setStrokeStyle(3, 0xffffff);
-                    stampBox.setRotation(-0.2);
-                    container.add(stampBox);
-                    
-                    // Traducción de ELEGIDO
-                    const stampTextStr = this.lang === 'es' ? 'ELEGIDO' : 'SELECTED';
-                    const stampText = this.add.text(0, 0, stampTextStr, { fontSize: '16px', fill: '#ffffff', fontStyle: 'bold' }).setOrigin(0.5).setRotation(-0.2);
-                    container.add(stampText);
-                }
-            } else {
-                const priceText = this.add.text(0, 45, `${skin.price} 🍌`, { fontSize: '14px', fill: '#ffff00', fontStyle: 'bold' }).setOrigin(0.5);
-                container.add(priceText);
-                bg.on('pointerdown', () => {
-                    if (this.isDragging) return;
-                    if (this.totalBananas >= skin.price) {
-                        this.totalBananas -= skin.price;
-                        localStorage.setItem('monkey_bananas', this.totalBananas);
-                        unlockedSkins.push(skin.id);
-                        localStorage.setItem('unlocked_skins', JSON.stringify(unlockedSkins));
-                        localStorage.setItem('equipped_skin', skin.id);
-                        
-                        // Guardar posición al comprar también
-                        const currentScroll = this.cameras.main.scrollY;
-                        this.scene.restart({ savedScroll: currentScroll });
-                    } else {
-                        this.cameras.main.shake(200, 0.005);
+                    // Imagen (Interrogante medio transparente)
+                    if (this.textures.exists(skin.shopImg)) {
+                        const sprite = this.add.image(0, -20, skin.shopImg).setScale(skin.scaleShop).setAlpha(0.6);
+                        container.add(sprite);
                     }
-                });
-            }
 
-            this.add.existing(container);
-            startX += cardWidth + spacing;
-        });
-        yPos += 200; 
+                    // Texto descriptivo abajo
+                    const t_soon = this.lang === 'es' ? 'PRÓXIMO' : 'SOON';
+                    const nameText = this.add.text(0, 55, t_soon, { 
+                        fontSize: '18px', fill: '#666666', fontStyle: 'bold', fontFamily: 'Courier' 
+                    }).setOrigin(0.5);
+                    container.add(nameText);
+
+                    // Si hacen clic, la cámara tiembla para indicar "no disponible"
+                    bg.on('pointerdown', () => {
+                        if (this.isDragging) return;
+                        this.cameras.main.shake(150, 0.005);
+                    });
+
+                } else {
+                    // --- MODO: TARJETA NORMAL (COMPRABLE/SELECCIONABLE) ---
+                    let bgColor = 0x333333;
+                    let strokeColor = 0x000000;
+                    if (isEquipped) { bgColor = 0x2d9bf0; strokeColor = 0xffffff; } 
+                    else if (isUnlocked) { bgColor = 0x317db8; }
+
+                    const bg = this.add.rectangle(0, 0, cardWidth, 150, bgColor).setInteractive();
+                    bg.setStrokeStyle(isEquipped ? 3 : 2, strokeColor);
+                    container.add(bg);
+
+                    if (this.textures.exists(skin.shopImg)) {
+                        const sprite = this.add.image(0, -20, skin.shopImg).setScale(skin.scaleShop);
+                        container.add(sprite);
+                    } else {
+                        container.add(this.add.text(0, -25, '?', { fontSize: '30px' }).setOrigin(0.5));
+                    }
+
+                    const nameText = this.add.text(0, 65, skin.name.toUpperCase(), { 
+                        fontSize: '16px', fill: '#ffffff', fontStyle: 'bold', fontFamily: 'Courier' 
+                    }).setOrigin(0.5);
+                    container.add(nameText);
+
+                    if (isUnlocked) {
+                        bg.on('pointerdown', () => {
+                            if (this.isDragging) return; 
+                            localStorage.setItem('equipped_skin', skin.id);
+                            const currentScroll = this.cameras.main.scrollY;
+                            this.scene.restart({ savedScroll: currentScroll });
+                        });
+
+                        if (isEquipped) {
+                            const stampBox = this.add.rectangle(0, 0, 90, 30);
+                            stampBox.setStrokeStyle(3, 0xffffff);
+                            stampBox.setRotation(-0.2);
+                            container.add(stampBox);
+                            
+                            const stampTextStr = this.lang === 'es' ? 'ELEGIDO' : 'SELECTED';
+                            const stampText = this.add.text(0, 0, stampTextStr, { fontSize: '16px', fill: '#ffffff', fontStyle: 'bold' }).setOrigin(0.5).setRotation(-0.2);
+                            container.add(stampText);
+                        }
+                    } else {
+                        const priceText = this.add.text(0, 45, `${skin.price} 🍌`, { fontSize: '14px', fill: '#ffff00', fontStyle: 'bold' }).setOrigin(0.5);
+                        container.add(priceText);
+                        bg.on('pointerdown', () => {
+                            if (this.isDragging) return;
+                            if (this.totalBananas >= skin.price) {
+                                this.totalBananas -= skin.price;
+                                localStorage.setItem('monkey_bananas', this.totalBananas);
+                                unlockedSkins.push(skin.id);
+                                localStorage.setItem('unlocked_skins', JSON.stringify(unlockedSkins));
+                                localStorage.setItem('equipped_skin', skin.id);
+                                
+                                const currentScroll = this.cameras.main.scrollY;
+                                this.scene.restart({ savedScroll: currentScroll });
+                            } else {
+                                this.cameras.main.shake(200, 0.005);
+                            }
+                        });
+                    }
+                }
+
+                this.add.existing(container);
+                startX += cardWidth + spacing;
+            });
+            
+            // Bajamos la Y para dibujar la siguiente fila de la misma familia
+            yPos += 180; 
+        }
+        
+        // Espacio extra antes del título de la siguiente familia
+        yPos += 40; 
     }
     
 
@@ -693,6 +805,9 @@ class GameScene extends Phaser.Scene {
     this.load.spritesheet('bromer', '/bromer.png', { frameWidth: 40, frameHeight: 40 });
     this.load.spritesheet('brusty', '/brusty.png', { frameWidth: 40, frameHeight: 40 });
     this.load.spritesheet('bort', '/bort.png', { frameWidth: 40, frameHeight: 40 });
+    this.load.spritesheet('spongebrob', '/spongebrob.png', { frameWidth: 34, frameHeight: 34 }); 
+
+
 
     //Los que están en la tienda
     this.load.image('figureClimber', '/monkeyclimber-figure.png');
@@ -706,6 +821,8 @@ class GameScene extends Phaser.Scene {
     this.load.image('figureBromer', '/bromer-figure.png');
     this.load.image('figureBrusty', '/brusty-figure.png');
     this.load.image('figureBort', '/bort-figure.png');
+    this.load.image('figureSpongeBrob', '/spongebrob-figure.png');
+    
 
     // --- Sonidos del juego ---
     this.load.audio('bgm_game', '/music_game.mp3');
@@ -714,6 +831,17 @@ class GameScene extends Phaser.Scene {
     this.load.audio('sfx_hit', '/hit.wav');
     this.load.audio('sfx_gameover', '/hit-1.wav');
     this.load.audio('sfx_rescue', '/rescue.mp3');
+
+    // --- NUBES Y ROCAS ---
+    this.load.image('nube1', '/nube1.png');
+    this.load.image('nube2', '/nube2.png');
+    this.load.image('nube3', '/nube3.png');
+    this.load.image('rock1', '/rock1.png');
+    this.load.image('rock2', '/rock2.png');
+
+    // --- COLECCIONABLES ---
+    this.load.image('banana', '/banana.png');
+    this.load.image('chili', '/chili.png');
 
   }
 
@@ -775,7 +903,36 @@ class GameScene extends Phaser.Scene {
 
     this.narrowOffset = 25; 
 
-    this.cameras.main.setBackgroundColor('#2d9bf0'); 
+    // --- FONDOS Y CICLO DÍA/NOCHE ---
+    // 1. Capas del cielo
+    this.skyBg = this.add.rectangle(centerX, height * 0.5, width, height, 0x2d9bf0).setDepth(-10);
+    this.sunsetBg = this.add.rectangle(centerX, height * 0.5, width, height, 0xff7b00).setDepth(-9).setAlpha(0); // Atardecer oculto
+    this.nightBg = this.add.rectangle(centerX, height * 0.5, width, height, 0x061423).setDepth(-8).setAlpha(0);  // Noche oculta
+
+    // 2. Contenedor de estrellas (Oculto al empezar)
+    this.starsContainer = this.add.container(0, 0).setDepth(-7).setAlpha(0);
+    
+    // Generar 40 estrellas que titilan de forma asíncrona
+    for (let i = 0; i < 40; i++) {
+        const star = this.add.circle(Phaser.Math.Between(0, width), Phaser.Math.Between(0, height), Phaser.Math.FloatBetween(1, 2), 0xffffff);
+        this.tweens.add({ 
+            targets: star, 
+            alpha: Phaser.Math.FloatBetween(0.2, 0.8), 
+            duration: Phaser.Math.Between(800, 2000), 
+            yoyo: true, 
+            repeat: -1 
+        });
+        this.starsContainer.add(star);
+    }
+
+    // 3. Preparar las nubes
+    this.cloudTint = 0xffffff; // Color base de las nubes (Blanco puro)
+    this.cloudsGroup = this.add.group();
+
+    // Llenar el cielo de nubes desde el primer segundo
+    for (let i = 0; i < 8; i++) {
+        this.spawnCloud(true); 
+    }
     
     // --- GESTIÓN DE SKIN EQUIPADA ---
     // Leemos qué skin elegiste en la tienda. Si no hay ninguna, usamos 'monkey'.
@@ -891,6 +1048,16 @@ if (this.textures.exists('bort')) {
         });
     }
 }
+if (this.textures.exists('spongebrob')) {
+    if (!this.anims.exists('climbSpongeBrob')) {
+        this.anims.create({ 
+            key: 'climbSpongeBrob', 
+            frames: this.anims.generateFrameNumbers('spongebrob', { start: 0, end: 4 }), 
+            frameRate: 10, 
+            repeat: -1 
+        });
+    }
+  }
 
     if (!this.anims.exists('crawl')) {
       this.anims.create({ key: 'crawl', frames: this.anims.generateFrameNumbers('oruga', { start: 0, end: 1 }), frameRate: 4, repeat: -1 });
@@ -909,9 +1076,12 @@ if (this.textures.exists('bort')) {
     this.overlapAmount = 1; 
     this.calcDimensions(width);
     
-    for(let i = 0; i < 5; i++) {
-        let yPos = (height * 0.5) + (height * 0.2) - (i * (this.trunkHeight - this.overlapAmount));
+    // Aumentamos de 5 a 6 troncos para ir sobrados por arriba
+    for(let i = 0; i < 6; i++) {
+        // Empujamos el tronco base (i=0) hasta el fondo del todo (height + 100px extra de seguridad)
+        let yPos = (height + 100) - (i * (this.trunkHeight - this.overlapAmount));
         yPos = Math.round(yPos);
+        
         let frameIndex = (i === 0) ? 7 : (i === 1) ? 6 : (i === 2) ? 5 : Phaser.Math.Between(0, 4);
         const tronco = this.add.sprite(centerX, yPos, 'troncosSheet', frameIndex);
         tronco.setScale(this.currentScale); 
@@ -941,6 +1111,7 @@ if (this.textures.exists('bort')) {
     else if (spriteKey === 'bromer') this.monkeySprite.play('climbBromer');
     else if (spriteKey === 'brusty') this.monkeySprite.play('climbBrusty');
     else if (spriteKey === 'bort') this.monkeySprite.play('climbBort');
+    else if (spriteKey === 'spongebrob') this.monkeySprite.play('climbSpongeBrob');
 
     this.player = this.add.container(centerX, height * 0.75, [this.monkeySprite])
     this.physics.add.existing(this.player)
@@ -984,7 +1155,7 @@ if (this.textures.exists('bort')) {
     const resumeBtn = this.add.rectangle(centerX, height * 0.40, 220, 55, 0x2d9bf0).setInteractive().setDepth(301);
     const resumeText = this.add.text(centerX, height * 0.40, t_resume, { fontSize: '26px', fill: '#fff', fontStyle: 'bold', fontFamily: 'Courier' }).setOrigin(0.5).setDepth(302);
     const resumeAction = () => this.resumeGame();
-    resumeBtn.on('pointerdown', resumeAction); resumeText.on('pointerdown', resumeAction);
+    resumeBtn.on('pointerup', resumeAction); resumeText.on('pointerup', resumeAction);
 
     // 2. Botón RETRY (Empezar de nuevo)
     const t_retry = this.lang === 'es' ? 'REINTENTAR' : 'RETRY';
@@ -994,7 +1165,7 @@ if (this.textures.exists('bort')) {
         if (this.gameMusic) this.gameMusic.stop(); // Paramos música actual
         this.scene.restart();
     };
-    retryBtn.on('pointerdown', retryAction); retryText.on('pointerdown', retryAction);
+    retryBtn.on('pointerup', retryAction); retryText.on('pointerup', retryAction);
 
     // 3. Botón QUIT (Menú principal)
     const t_quit = this.lang === 'es' ? 'SALIR' : 'QUIT';
@@ -1004,7 +1175,7 @@ if (this.textures.exists('bort')) {
         if (this.gameMusic) this.gameMusic.stop(); // Paramos música
         this.scene.start('MainMenu');
     };
-    quitBtn.on('pointerdown', quitAction); quitText.on('pointerdown', quitAction);
+    quitBtn.on('pointerup', quitAction); quitText.on('pointerup', quitAction);
 
     // Agrupamos todo y lo ocultamos
     this.pauseGroup.addMultiple([pauseBg, pauseTitle, resumeBtn, resumeText, retryBtn, retryText, quitBtn, quitText]);
@@ -1118,6 +1289,8 @@ if (this.textures.exists('bort')) {
        this.time.addEvent({ delay: 3000, loop: true, callback: () => this.spawnBroItem() });
        this.time.addEvent({ delay: 1500, loop: true, callback: () => this.spawnBanana() });
        this.time.addEvent({ delay: 30000, loop: true, callback: () => this.spawnChili() });
+       // Generar una nube nueva cada 2 o 4 segundos
+       this.time.addEvent({ delay: Phaser.Math.Between(2000, 4000), loop: true, callback: () => this.spawnCloud() });
    });
    // -------------------------------------
 
@@ -1135,6 +1308,34 @@ if (this.textures.exists('bort')) {
     this.currentTreeVisualWidth = targetTreeWidth;
 }
 
+spawnCloud(randomY = false) {
+    const width = this.scale.width;
+    const height = this.scale.height;
+    
+    // 1. Elegir una nube al azar
+    const cloudKey = Phaser.Math.RND.pick(['nube1', 'nube2', 'nube3']);
+    
+    // 2. Coordenadas (randomY sirve para poblar la pantalla al empezar)
+    const startX = Phaser.Math.Between(-50, width + 50);
+    const startY = randomY ? Phaser.Math.Between(-100, height) : Phaser.Math.Between(-150, -50);
+
+    // 3. Crear el sprite
+    const cloud = this.add.image(startX, startY, cloudKey);
+    
+    // 4. Aplicar escala aleatoria para dar variedad
+    cloud.setScale(Phaser.Math.FloatBetween(1.5, 3.5));
+    cloud.setDepth(-5); // Detrás del árbol pero delante del cielo
+    cloud.setAlpha(Phaser.Math.FloatBetween(0.5, 0.9)); // Medio transparentes
+    
+    // 5. Aplicarle el tinte de luz (Blanco de día, Naranja de tarde, Azul oscuro de noche)
+    cloud.setTint(this.cloudTint); 
+    
+    // 6. ¡LA MAGIA PARALLAX! Cada nube se moverá a una velocidad distinta
+    cloud.setData('parallaxSpeed', Phaser.Math.FloatBetween(0.40, 0.75));
+
+    this.cloudsGroup.add(cloud);
+}
+
   resize(gameSize) {
     const width = gameSize.width;
     const height = gameSize.height;
@@ -1145,6 +1346,13 @@ if (this.textures.exists('bort')) {
             tronco.x = width * 0.5;
         });
         this.realignTrunks();
+    }
+    if (this.skyBg) {
+        const cx = width * 0.5;
+        const cy = height * 0.5;
+        this.skyBg.setPosition(cx, cy).setSize(width, height);
+        this.sunsetBg.setPosition(cx, cy).setSize(width, height);
+        this.nightBg.setPosition(cx, cy).setSize(width, height);
     }
     if (this.hudBar) {
         this.hudBar.setPosition(width * 0.5, 30);
@@ -1183,6 +1391,14 @@ if (this.textures.exists('bort')) {
 
     const move = this.gameSpeed * (delta / 1000);
     this.troncoGroup.children.iterate((tronco) => { tronco.y += move; });
+    // --- PARALLAX DE NUBES ---
+    this.cloudsGroup.children.iterate((cloud) => {
+        if (cloud) {
+            cloud.y += move * cloud.getData('parallaxSpeed');
+            // Reciclarla si sale de la pantalla por abajo
+            if (cloud.y > this.scale.height + 150) cloud.destroy();
+        }
+    });
     this.realignTrunks();
 
     // === SPAWN POR DISTANCIA (AJUSTADO) ===
@@ -1497,9 +1713,75 @@ if (this.textures.exists('bort')) {
     this.spiders.add(spider);
   }
 
-  spawnBanana() { const b = this.add.text(this.getSpawnX(), -50, '🍌', { fontSize: '30px' }).setOrigin(0.5); this.physics.add.existing(b); b.body.setCircle(15); b.setDepth(5); this.bananas.add(b); }
-  spawnChili() { const c = this.add.text(this.getSpawnX(), -50, '🌶️', { fontSize: '35px' }).setOrigin(0.5); this.physics.add.existing(c); c.body.setCircle(15); c.setDepth(5); this.chilis.add(c); }
-  spawnRock() { const r = this.add.circle(this.getSpawnX(), -50, 12, 0x8d8885); this.physics.add.existing(r); r.setDepth(5); this.rocks.add(r); }
+  spawnBanana() { 
+    const b = this.add.image(this.getSpawnX(), -50, 'banana').setScale(1.5); 
+    this.physics.add.existing(b); 
+    
+    // Ajustamos la caja de colisión para que no sobre mucho espacio invisible
+    b.body.setCircle(b.width * 0.4); 
+    b.body.setOffset(b.width * 0.1, b.height * 0.1);
+    
+    b.setDepth(5); 
+    this.bananas.add(b); 
+    
+    // Animación: Un latido suave y orgánico con un poco de rotación
+    this.tweens.add({
+        targets: b,
+        scaleX: 1.7,
+        scaleY: 1.7,
+        angle: 10,
+        duration: 600,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut'
+    });
+}
+
+spawnChili() { 
+    const c = this.add.image(this.getSpawnX(), -50, 'chili').setScale(1.5); 
+    this.physics.add.existing(c); 
+    
+    c.body.setCircle(c.width * 0.4); 
+    c.body.setOffset(c.width * 0.1, c.height * 0.1);
+    c.setDepth(5); 
+    this.chilis.add(c); 
+    
+    // Animación: Un latido más rápido y nervioso (¡es un Turbo!)
+    this.tweens.add({
+        targets: c,
+        scaleX: 1.8,
+        scaleY: 1.8,
+        angle: -15,
+        duration: 350,
+        yoyo: true,
+        repeat: -1,
+        ease: 'Sine.easeInOut'
+    });
+}
+  spawnRock() { 
+    // 1. Elegir una textura de roca al azar
+    const rockKey = Phaser.Math.RND.pick(['rock1', 'rock2']);
+    
+    // 2. Crear el sprite (le pongo escala 2.0 provisional, ajústala si la ves muy grande/pequeña)
+    const r = this.add.image(this.getSpawnX(), -50, rockKey).setScale(2.0); 
+    
+    this.physics.add.existing(r); 
+    
+    // 3. Ajustar la caja de colisión para que sea un círculo (más justo a la imagen)
+    r.body.setCircle(r.width * 0.4);
+    r.body.setOffset(r.width * 0.1, r.height * 0.1);
+    
+    r.setDepth(5); 
+    this.rocks.add(r); 
+    
+    // 4. ¡LA MAGIA! Añadir una rotación infinita para que caiga dando vueltas
+    this.tweens.add({
+        targets: r,
+        angle: Phaser.Math.RND.pick([360, -360]), // Gira a derecha o izquierda al azar
+        duration: Phaser.Math.Between(2000, 3000), // Velocidad de giro variable
+        repeat: -1
+    });
+}
   spawnBroItem() {
     // 1. Si ya tienes compañero o ya hay uno en pantalla, no sacar nada
     if (this.hasBro || this.broCollectibles.getLength() > 0) return;
@@ -1605,17 +1887,63 @@ if (this.textures.exists('bort')) {
     this.broObject.setScale(2.2); 
     this.broObject.play('climbBrusty');
     }
+    
     else if (s === 'bort' && this.anims.exists('climbBort')) {
         this.broObject.setScale(2.0); // Tamaño estándar (o 1.8 si lo quieres más bajito)
         this.broObject.play('climbBort');
     }
+    else if (s === 'spongebrob' && this.anims.exists('climbSpongeBrob')) {
+        this.broObject.setScale(2.2); 
+        this.broObject.play('climbSpongeBrob');
+    }
+    
     else {
         // Fallback: Mono normal
         this.broObject.play('climb');
     }
   }
   
-  levelUp() { this.level++; this.nextLevelScore += 2000; this.levelText.setText('Lv ' + this.level); this.gameSpeed += 40; const t = this.add.text(this.scale.width*0.5, this.scale.height*0.5, `LEVEL ${this.level}`, { fontSize: '60px', fill: '#fff', stroke: '#000', strokeThickness: 6 }).setOrigin(0.5).setDepth(200); this.time.delayedCall(500, () => t.destroy()); if (this.level === 2 && !this.rocksActivated) { this.rocksActivated = true; this.time.addEvent({ delay: 2000, loop: true, callback: () => this.spawnRock() }); } if (this.level >= 3 && !this.hasBro) this.spawnBroItem(); }
+  levelUp() { 
+    this.level++; 
+    this.nextLevelScore += 2000; 
+    this.levelText.setText('Lv ' + this.level); 
+    this.gameSpeed += 40; 
+    
+    const t = this.add.text(this.scale.width*0.5, this.scale.height*0.5, `LEVEL ${this.level}`, { fontSize: '60px', fill: '#fff', stroke: '#000', strokeThickness: 6 }).setOrigin(0.5).setDepth(200); 
+    this.time.delayedCall(500, () => t.destroy()); 
+    
+    if (this.level === 2 && !this.rocksActivated) { 
+        this.rocksActivated = true; 
+        this.time.addEvent({ delay: 2000, loop: true, callback: () => this.spawnRock() }); 
+    } 
+    if (this.level >= 3 && !this.hasBro) this.spawnBroItem(); 
+
+    // ==========================================
+      // --- MAGIA: TRANSICIÓN RÁPIDA A LA NOCHE (4 SEGUNDOS) ---
+      // ==========================================
+      
+      // Elegimos el Nivel 5 (por ejemplo) para que se haga de noche de golpe
+      if (this.level === 5) {
+          
+        // FASE 1: Entra el atardecer naranja (Dura 1,5 segundos)
+        this.cloudTint = 0xffccaa; 
+        this.cloudsGroup.children.iterate(c => c.setTint(this.cloudTint));
+        this.tweens.add({ targets: this.sunsetBg, alpha: 0.8, duration: 1500 }); 
+        
+        // FASE 2: Justo a los 2 segundos, cruzamos a la Noche y salen las estrellas
+        this.time.delayedCall(2000, () => {
+            this.cloudTint = 0x555577; // Nubes oscuras
+            this.cloudsGroup.children.iterate(c => c.setTint(this.cloudTint));
+            
+            // Se apaga el naranja y se enciende el azul oscuro a la vez (otros 2 segundos)
+            this.tweens.add({ targets: this.sunsetBg, alpha: 0, duration: 2000 }); 
+            this.tweens.add({ targets: this.nightBg, alpha: 1, duration: 2000 });
+            
+            // Las estrellas aparecen brillando junto con la noche
+            this.tweens.add({ targets: this.starsContainer, alpha: 1, duration: 2000 });
+        });
+    }
+}
   
   hit() {
     if (this.isInvulnerable) return;
@@ -1660,6 +1988,10 @@ if (this.textures.exists('bort')) {
         this.monkeySprite.play('climbBort');
         this.monkeySprite.setScale(2.0);
       }
+      else if (this.currentLeaderSkin === 'spongebrob') {
+        this.monkeySprite.play('climbSpongeBrob');
+        this.monkeySprite.setScale(2.0);
+      }
 
       this.player.x = this.broObject.x; this.player.y = this.broObject.y;
       this.broObject.destroy(); this.broObject = null;
@@ -1679,6 +2011,11 @@ if (this.textures.exists('bort')) {
     this.physics.pause();
     this.anims.pauseAll();
     
+    // --- LA SOLUCIÓN ---
+    // Congelamos el reloj creador de objetos y los latidos/rotaciones
+    this.time.paused = true;
+    this.tweens.pauseAll();
+    
     // Pausar música suavemente
     if (this.gameMusic && this.gameMusic.isPlaying) {
         this.gameMusic.pause();
@@ -1693,6 +2030,11 @@ resumeGame() {
     this.isPaused = false;
     this.physics.resume();
     this.anims.resumeAll();
+    
+    // --- LA SOLUCIÓN ---
+    // Descongelamos el reloj y los latidos
+    this.time.paused = false;
+    this.tweens.resumeAll();
     
     // Reanudar música
     if (this.gameMusic && this.gameMusic.isPaused) {
@@ -1765,8 +2107,8 @@ triggerGameOver(text) {
     }).setOrigin(0.5).setInteractive().setDepth(1001);
     
     const rf = () => this.scene.restart(); 
-    rb.on('pointerdown', rf); 
-    rt.on('pointerdown', rf);
+    rb.on('pointerup', rf); 
+    rt.on('pointerup', rf);
 
     // --- BOTÓN MENÚ PRINCIPAL ---
     const t_menu = this.lang === 'es' ? 'MENÚ PRINCIPAL' : 'MAIN MENU';
@@ -1776,8 +2118,8 @@ triggerGameOver(text) {
     }).setOrigin(0.5).setInteractive().setDepth(1001);
     
     const mf = () => this.scene.start('MainMenu'); 
-    mb.on('pointerdown', mf); 
-    mt.on('pointerdown', mf);
+    mb.on('pointerup', mf); 
+    mt.on('pointerup', mf);
   }
 } // <--- Cierre de tu clase GameScene
 
