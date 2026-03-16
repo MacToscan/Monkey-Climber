@@ -794,6 +794,7 @@ class GameScene extends Phaser.Scene {
     this.load.spritesheet('monkey', '/monkey_climb_strip.png', { frameWidth: 34, frameHeight: 34 });
     this.load.spritesheet('monkeyBro', '/monkey-bro.png', { frameWidth: 34, frameHeight: 34 });
     this.load.spritesheet('oruga', '/oruga_strip2.png', { frameWidth: 40, frameHeight: 40 });
+    this.load.spritesheet('oruga2', '/oruga2.png', { frameWidth: 40, frameHeight: 40 });
     this.load.spritesheet('arana', '/arana.png', { frameWidth: 64, frameHeight: 64 });
     this.load.spritesheet('abeja', '/bee.png', { frameWidth: 40, frameHeight: 40 });
     this.load.spritesheet('broku', '/broku.png', { frameWidth: 40, frameHeight: 40 });
@@ -1062,6 +1063,10 @@ if (this.textures.exists('spongebrob')) {
     if (!this.anims.exists('crawl')) {
       this.anims.create({ key: 'crawl', frames: this.anims.generateFrameNumbers('oruga', { start: 0, end: 1 }), frameRate: 4, repeat: -1 });
     }
+
+    if (!this.anims.exists('crawl2')) {
+        this.anims.create({ key: 'crawl2', frames: this.anims.generateFrameNumbers('oruga2', { start: 0, end: 1 }), frameRate: 4, repeat: -1 });
+      }
     // --- ANIMACIONES ABEJA ---
     if (!this.anims.exists('beeLeft')) {
       this.anims.create({ key: 'beeLeft', frames: this.anims.generateFrameNumbers('abeja', { frames: [1, 2] }), frameRate: 10, repeat: -1 });
@@ -1286,9 +1291,21 @@ if (this.textures.exists('spongebrob')) {
        }
 
        // Empezar a generar enemigos y plátanos
-       this.time.addEvent({ delay: 3000, loop: true, callback: () => this.spawnBroItem() });
-       this.time.addEvent({ delay: 1500, loop: true, callback: () => this.spawnBanana() });
-       this.time.addEvent({ delay: 30000, loop: true, callback: () => this.spawnChili() });
+       // --- PUNTO 6: SI HAY CHILI NO HAY BANANA ---
+       this.itemCounter = 0; // Contador de objetos
+       
+       this.time.addEvent({ delay: 1500, loop: true, callback: () => {
+           this.itemCounter++;
+           // Cada 20 "turnos" (unos 30 segundos), instanciamos un Chili en lugar de una Banana
+           if (this.itemCounter % 20 === 0) {
+               this.spawnChili();
+           } else {
+               this.spawnBanana();
+           }
+       }});
+       
+       // Generar una nube nueva cada 2 o 4 segundos (Esta la dejamos igual)
+       this.time.addEvent({ delay: Phaser.Math.Between(2000, 4000), loop: true, callback: () => this.spawnCloud() });
        // Generar una nube nueva cada 2 o 4 segundos
        this.time.addEvent({ delay: Phaser.Math.Between(2000, 4000), loop: true, callback: () => this.spawnCloud() });
    });
@@ -1408,11 +1425,20 @@ spawnCloud(randomY = false) {
         const roll = Phaser.Math.Between(0, 100);
         
         // Lógica de Niveles
+        // --- PUNTO 2: ORDEN DE ENEMIGOS SEGÚN NIVEL ---
         if (this.level < 3) {
+            // Niveles 0, 1 y 2: Solo salen Orugas
             this.spawnOruga();
-        } else {
+        } 
+        else if (this.level === 3) {
+            // Nivel 3: Orugas (60%) y Arañas (40%)
+            if (roll < 40) this.spawnSpider();
+            else this.spawnOruga();
+        } 
+        else {
+            // Nivel 4 en adelante: Orugas (40%), Arañas (30%) y Abejas (30%)
             if (roll < 30) this.spawnSpider();
-            else if (roll < 60) this.spawnBee(); // <--- AHORA SÍ
+            else if (roll < 60) this.spawnBee(); 
             else this.spawnOruga();
         }
 
@@ -1658,8 +1684,19 @@ spawnCloud(randomY = false) {
     if (spawnMax <= spawnMin) return;
     const spawnX = Phaser.Math.Between(spawnMin, spawnMax);
     
-    const oruga = this.add.sprite(spawnX, -50, 'oruga').setScale(1.5);
-    this.physics.add.existing(oruga); oruga.setDepth(5); oruga.play('crawl');
+    // Elegir aleatoriamente entre la oruga verde (oruga) y la roja/neón (oruga2)
+    const orugaType = Phaser.Math.RND.pick(['oruga', 'oruga2']);
+    
+    const oruga = this.add.sprite(spawnX, -50, orugaType).setScale(1.5);
+    this.physics.add.existing(oruga); 
+    oruga.setDepth(5); 
+    
+    // Reproducir la animación correspondiente a la que ha tocado
+    if (orugaType === 'oruga') {
+        oruga.play('crawl');
+    } else {
+        oruga.play('crawl2');
+    }
     oruga.body.setSize(25, 20); oruga.body.setOffset(7, 10);
     oruga.setData('startX', spawnX); oruga.setData('patrolRange', 40); oruga.setData('speedX', Phaser.Math.RND.pick([1, -1])); oruga.setFlipX(oruga.getData('speedX') < 0);
     this.obstacles.add(oruga);
@@ -1825,14 +1862,30 @@ spawnChili() {
     b.destroy(); 
     this.sessionBananas++; this.totalBananas++; this.bananaText.setText('🍌 ' + this.sessionBananas); 
     localStorage.setItem('monkey_bananas', this.totalBananas); }
-  collectChili(_, c) { 
-    this.chiliSound.play();
-    c.destroy(); 
-    if (this.isTurbo) return; 
-    this.isTurbo = true; this.gameSpeed += 400; this.monkeySprite.setTint(0xff4500); 
-    this.time.delayedCall(6000, () => { this.gameSpeed -= 400; 
-    this.monkeySprite.clearTint(); 
-    this.isTurbo = false; }); }
+    collectChili(_, c) { 
+        this.chiliSound.play();
+        c.destroy(); 
+        
+        if (this.isTurbo) return; 
+        this.isTurbo = true; 
+        
+        // --- PUNTO 4: VELOCIDAD TURBO CONTROLADA ---
+        // Queremos que la velocidad máxima del chili sea siempre 700 (que era la proporción inicial).
+        const targetTurboSpeed = 700;
+        // Calculamos el empujón exacto que necesita para llegar a 700. 
+        // Le ponemos un Math.max de 100 por si llegas al nivel 20 y ya vas más rápido que el propio chili.
+        const speedBoost = Math.max(100, targetTurboSpeed - this.gameSpeed);
+        
+        this.gameSpeed += speedBoost; 
+        this.monkeySprite.setTint(0xff4500); 
+        
+        // --- PUNTO 5: DURACIÓN DE x SEGUNDO (x) ---
+        this.time.delayedCall(2500, () => { 
+            this.gameSpeed -= speedBoost; 
+            this.monkeySprite.clearTint(); 
+            this.isTurbo = false; 
+        }); 
+      }
   
   
   rescueBro(_, b) { 
@@ -1907,16 +1960,30 @@ spawnChili() {
     this.level++; 
     this.nextLevelScore += 2000; 
     this.levelText.setText('Lv ' + this.level); 
-    this.gameSpeed += 40; 
+    // --- CURVA DE VELOCIDAD CONTROLADA ---
+    if (this.level <= 4) {
+        // En los primeros niveles, sube 25 puntos
+        this.gameSpeed += 25; 
+    } else if (this.level <= 8) {
+        // A partir del nivel 5, solo sube 10 puntos (ya va rápido, no queremos pasarnos)
+        this.gameSpeed += 10; 
+    } else {
+        // En niveles altísimos (9+), apenas sube 2 puntitos para mantener la tensión sin volverse loco
+        this.gameSpeed += 2;  
+    }
     
     const t = this.add.text(this.scale.width*0.5, this.scale.height*0.5, `LEVEL ${this.level}`, { fontSize: '60px', fill: '#fff', stroke: '#000', strokeThickness: 6 }).setOrigin(0.5).setDepth(200); 
     this.time.delayedCall(500, () => t.destroy()); 
     
-    if (this.level === 2 && !this.rocksActivated) { 
+    if (this.level === 5 && !this.rocksActivated) { 
         this.rocksActivated = true; 
         this.time.addEvent({ delay: 2000, loop: true, callback: () => this.spawnRock() }); 
     } 
-    if (this.level >= 3 && !this.hasBro) this.spawnBroItem(); 
+    // --- PUNTO 1: UN COMPAÑERO CADA 2 NIVELES ---
+    // Si el nivel es par (2, 4, 6...), no tienes compañero, y no hay ya un ítem cayendo en pantalla:
+    if (this.level % 2 === 0 && !this.hasBro && this.broCollectibles.getLength() === 0) {
+        this.spawnBroItem();
+    }
 
     // ==========================================
       // --- MAGIA: TRANSICIÓN RÁPIDA A LA NOCHE (4 SEGUNDOS) ---
