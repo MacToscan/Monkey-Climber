@@ -1,7 +1,8 @@
 // ================== IMPORTS ==================
 import './style.css'
 import Phaser from 'phaser'
-
+import { StatusBar } from '@capacitor/status-bar';               
+import { KeepAwake } from '@capacitor-community/keep-awake';
 // ================== CONFIGURACIÓN DE SKINS ==================
 const SKINS = [
     // --- FAMILIA: PRINCIPALES ---
@@ -9,7 +10,7 @@ const SKINS = [
     { id: 'monkeyBro', name: 'Climbro', family: 'Principales', price: 0, shopImg: 'figureBro', scaleShop: 2.5 },
   
     // --- FAMILIA: THE SIMPSBRON (Ganchos baratos para empezar) ---
-    { id: 'bromer', name: 'Bromer', family: 'The Simpsbron', price: 150, shopImg: 'figureBromer', scaleShop: 2.5 },
+    { id: 'bromer', name: 'Bromer', family: 'The Simpsbron', price: 1, shopImg: 'figureBromer', scaleShop: 2.5 },
     { id: 'brusty', name: 'Brusty', family: 'The Simpsbron', price: 300, shopImg: 'figureBrusty', scaleShop: 2.5 },
     { id: 'bort', name: 'Bort', family: 'The Simpsbron', price: 600, shopImg: 'figureBort', scaleShop: 2.3 }, // El meme caro
     { id: 'sb_soon1', name: '???', family: 'The Simpsbron', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
@@ -17,7 +18,7 @@ const SKINS = [
     { id: 'sb_soon3', name: '???', family: 'The Simpsbron', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
   
     // --- FAMILIA: MARBREL (Nivel Medio) ---
-    { id: 'spiderbro', name: 'Spider-Bro', family: 'Marbrel', price: 150, shopImg: 'figureSpiderBro', scaleShop: 2.8 },
+    { id: 'spiderbro', name: 'Spider-Bro', family: 'Marbrel', price: 1, shopImg: 'figureSpiderBro', scaleShop: 2.8 },
     { id: 'brolverine', name: 'Brolverine', family: 'Marbrel', price: 300, shopImg: 'figureBrolverine', scaleShop: 2.8 },
     { id: 'brhulk', name: 'Brulk', family: 'Marbrel', price: 600, shopImg: 'figureBrhulk', scaleShop: 2.8 }, // Gigante = Más caro
     { id: 'mb_soon1', name: '???', family: 'Marbrel', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
@@ -132,6 +133,10 @@ class MainMenu extends Phaser.Scene {
 
 
   create() {
+
+    // --- CONFIGURACIÓN NATIVA DE APP ---
+    StatusBar.hide().catch(() => {}); // Oculta batería y reloj
+    KeepAwake.keepAwake().catch(() => {}); // Evita que la pantalla se apague
 
     // --- SISTEMA DE IDIOMA Y AUDIO (¡AQUÍ FALTABA ESTO!) ---
     this.lang = localStorage.getItem('monkey_lang') || 'en';
@@ -551,7 +556,7 @@ class ShopScene extends Phaser.Scene {
                     container.add(nameText);
 
                     // Si hacen clic, la cámara tiembla para indicar "no disponible"
-                    bg.on('pointerdown', () => {
+                    bg.on('pointerup', () => {
                         if (this.isDragging) return;
                         this.cameras.main.shake(150, 0.005);
                     });
@@ -580,7 +585,7 @@ class ShopScene extends Phaser.Scene {
                     container.add(nameText);
 
                     if (isUnlocked) {
-                        bg.on('pointerdown', () => {
+                        bg.on('pointerup', () => {
                             if (this.isDragging) return; 
                             localStorage.setItem('equipped_skin', skin.id);
                             const currentScroll = this.cameras.main.scrollY;
@@ -600,17 +605,78 @@ class ShopScene extends Phaser.Scene {
                     } else {
                         const priceText = this.add.text(0, 45, `${skin.price} 🍌`, { fontSize: '14px', fill: '#ffff00', fontStyle: 'bold' }).setOrigin(0.5);
                         container.add(priceText);
-                        bg.on('pointerdown', () => {
+                        
+                        bg.on('pointerup', () => {
                             if (this.isDragging) return;
                             if (this.totalBananas >= skin.price) {
+                                // 1. Lógica de cobro (La que ya tenías)
                                 this.totalBananas -= skin.price;
                                 localStorage.setItem('monkey_bananas', this.totalBananas);
+                                
+                                // Actualizamos el marcador superior al instante
+                                this.moneyText.setText(`${this.totalBananas} 🍌`);
+
                                 unlockedSkins.push(skin.id);
                                 localStorage.setItem('unlocked_skins', JSON.stringify(unlockedSkins));
                                 localStorage.setItem('equipped_skin', skin.id);
                                 
-                                const currentScroll = this.cameras.main.scrollY;
-                                this.scene.restart({ savedScroll: currentScroll });
+                                // 2. Ocultamos el precio para dejar la carta limpia
+                                priceText.setVisible(false);
+
+                                // 3. Ponemos la carta por encima del resto para que al crecer no se corte
+                                // --- LA NUEVA MAGIA: EL VIAJE DE LA CARTA ---
+                                // 1. Guardamos dónde estaba la carta originalmente
+                                const origX = container.x;
+                                const origY = container.y;
+                                
+                                // 2. Calculamos el centro exacto de la pantalla (sumando el scroll actual)
+                                const targetX = this.scale.width * 0.5;
+                                const targetY = this.cameras.main.scrollY + (this.scale.height * 0.5);
+
+                                // Ponemos la carta por encima de toda la tienda y la cabecera
+                                container.setDepth(1000); 
+
+                                // FASE 1: Viaje al centro y zoom
+                                this.tweens.add({
+                                    targets: container,
+                                    x: targetX,
+                                    y: targetY,
+                                    scaleX: 2,   // Se hace casi el doble de grande
+                                    scaleY: 2,
+                                    duration: 5, // Medio segundito de viaje
+                                    ease: 'Back.easeOut', // Efecto de frenada elástica al llegar al centro
+                                    onComplete: () => {
+                                        
+                                        // FASE 2: Latido en el centro (Pum-Pum)
+                                        this.tweens.add({
+                                            targets: container,
+                                            scaleX: 2.5,   // Crece un poco más
+                                            scaleY: 2.5,
+                                            duration: 300,
+                                            yoyo: true,    // Vuelve a 1.8
+                                            repeat: 1,     // Hace 2 latidos
+                                            onComplete: () => {
+                                                
+                                                // FASE 3: Vuelta rápida a su estante
+                                                this.tweens.add({
+                                                    targets: container,
+                                                    x: origX,
+                                                    y: origY,
+                                                    scaleX: 1,     // Vuelve a tamaño normal
+                                                    scaleY: 1,
+                                                    duration: 250,
+                                                    ease: 'Power2',
+                                                    onComplete: () => {
+                                                        // 4. Reiniciamos la tienda cuando todo ha terminado
+                                                        const currentScroll = this.cameras.main.scrollY;
+                                                        this.scene.restart({ savedScroll: currentScroll });
+                                                    }
+                                                });
+                                            }
+                                        });
+                                    }
+                                });
+
                             } else {
                                 this.cameras.main.shake(200, 0.005);
                             }
@@ -790,21 +856,22 @@ class GameScene extends Phaser.Scene {
     // Detectamos el idioma
     this.lang = localStorage.getItem('monkey_lang') || 'en';
 
-    // -------- ESTADO --------
-    this.isGameOver = false
-    this.gameStarted = false; // <--- NUEVA VARIABLE PARA EL TUTORIAL
-    this.score = 0
-    this.scoreFloat = 0
-    this.level = 0
-    this.nextLevelScore = 2000 
-    this.gameSpeed = 300
-    this.isTurbo = false
-    this.hasBro = false
-    this.broObject = null
-    this.isInvulnerable = false
-    this.rocksActivated = false
-    this.totalBananas = parseInt(localStorage.getItem('monkey_bananas') || 0)
-    this.sessionBananas = 0
+    // -------- ESTADO (ÚNICO Y DEFINITIVO) --------
+    this.isGameOver = false;
+    this.hasRevived = false;  
+    this.gameStarted = false;
+    this.score = 0;
+    this.scoreFloat = 0;
+    this.level = 1;         // <--- Empezamos en el Nivel 1
+    this.nextLevelScore = 2000; 
+    this.gameSpeed = 330;   // <--- Un poco más rápido para darle ritmo
+    this.isTurbo = false;
+    this.hasBro = false;
+    this.broObject = null;
+    this.isInvulnerable = false;
+    this.rocksActivated = false;
+    this.totalBananas = parseInt(localStorage.getItem('monkey_bananas') || 0);
+    this.sessionBananas = 0;
     
 
     // SPAWN
@@ -821,11 +888,6 @@ class GameScene extends Phaser.Scene {
 
     // 2. Contenedor de estrellas (Oculto al empezar)
     this.starsContainer = this.add.container(0, 0).setDepth(-7).setAlpha(0);
-
-    // -------- ESTADO --------
-    this.isGameOver = false;
-    this.hasRevived = false;  // <--- NUEVA: Controla si ya ha gastado su vida extra
-    this.gameStarted = false;
     
     // Generar 40 estrellas que titilan de forma asíncrona
     for (let i = 0; i < 40; i++) {
@@ -1051,7 +1113,7 @@ if (this.textures.exists('spongebrob')) {
     this.scoreText = this.add.text(15, 30, '0m', { ...hudStyle, fill: '#ffffff' }).setOrigin(0, 0.5).setDepth(102);
     
     // Verde más "fósforo" tipo consola retro
-    this.levelText = this.add.text(centerX, 30, 'Lv 0', { ...hudStyle, fill: '#00ffcc' }).setOrigin(0.5).setDepth(102);
+    this.levelText = this.add.text(centerX, 30, 'Lv 1', { ...hudStyle, fill: '#00ffcc' }).setOrigin(0.5).setDepth(102);
     
     this.bananaText = this.add.text(width - 65, 30, '🍌 0', { ...hudStyle, fill: '#ffff00' }).setOrigin(1, 0.5).setDepth(102);
     
@@ -1188,6 +1250,20 @@ if (this.textures.exists('spongebrob')) {
    this.anims.pauseAll();
 
    // --- PRIMER TOQUE (EMPIEZA EL JUEGO) ---
+// --- AUTO-PAUSA AL BLOQUEAR EL MÓVIL ---
+this.game.events.on('hidden', () => {
+    // Si el juego está corriendo y no estamos ya en la pantalla de Game Over
+    if (this.gameStarted && !this.isGameOver && !this.isPaused) {
+        this.pauseGame();
+    }
+}, this);
+
+// Opcional pero recomendable: limpiar el evento al salir de la escena
+// para que no se acumulen si el jugador entra y sale del nivel muchas veces.
+this.events.on('shutdown', () => {
+    this.game.events.off('hidden');
+});
+
    this.input.once('pointerdown', () => {
        this.gameStarted = true;
        
@@ -1230,6 +1306,8 @@ if (this.textures.exists('spongebrob')) {
 }
 
 spawnCloud(randomY = false) {
+    if (this.isGameOver) return; // <--- EL CANDADO (También para las nubes)
+    
     const width = this.scale.width;
     const height = this.scale.height;
     
@@ -1529,7 +1607,20 @@ spawnCloud(randomY = false) {
         }
     }
 
-    if (this.input.activePointer.isDown) this.player.x = this.input.activePointer.x;
+    // --- PUNTO 3: MARGEN DE SEGURIDAD HUD ---
+    // Si el dedo está tocando la pantalla...
+    if (this.input.activePointer.isDown) {
+        
+        // ...pero SOLO si está por debajo del botón de pausa (Y mayor que 90)
+        if (this.input.activePointer.y > 90) {
+            
+            // --- PUNTO 2: MOVIMIENTO SÚPER FLUIDO ---
+            // En lugar de teletransportar al mono, hacemos que se deslice suavemente 
+            // hacia el dedo (eso arregla los saltos táctiles de móviles ajustados)
+            const targetX = this.input.activePointer.x;
+            this.player.x = Phaser.Math.Linear(this.player.x, targetX, 0.25); // 0.25 es la suavidad
+        }
+    }
     if (this.player.x < safeMin || this.player.x > safeMax) this.triggerGameOver('FELL!');
 
     this.scoreFloat += this.gameSpeed * 0.005;
@@ -1712,6 +1803,7 @@ spawnChili() {
     });
 }
   spawnRock() { 
+    if (this.isGameOver) return; // <--- EL CANDADO ANTIA-APILAMIENTOS
     // 1. Elegir una textura de roca al azar
     const rockKey = Phaser.Math.RND.pick(['rock1', 'rock2']);
     
@@ -2098,6 +2190,10 @@ triggerGameOver(text) {
     // =========================================================
     let btnY = cy + 55; // Posición Y donde empieza a colocarse el primer botón
 
+    // --- NUEVO: SEGURO DE MEDIO SEGUNDO ---
+    let canClick = false;
+    this.time.delayedCall(800, () => { canClick = true; });
+
     // 1. BOTÓN REVIVIR (Solo sale 1 vez por partida)
     if (!this.hasRevived) {
         const t_revive = this.lang === 'es' ? '¡REVIVIR! 📺' : 'REBORN! 📺';
@@ -2108,6 +2204,7 @@ triggerGameOver(text) {
         const revTween = this.tweens.add({ targets: [revBtn, revText], scaleX: 1.08, scaleY: 1.08, duration: 400, yoyo: true, repeat: -1, ease: 'Quad.easeInOut' });
 
         const reviveAction = () => {
+            if (!canClick) return;
             revBtn.disableInteractive(); revText.disableInteractive(); revTween.stop();
             revBtn.setScale(1); revBtn.setFillStyle(0xaaaaaa); revBtn.setStrokeStyle(0);
             revText.setText(this.lang === 'es' ? 'CARGANDO...' : 'LOADING...');
@@ -2162,6 +2259,7 @@ triggerGameOver(text) {
         }
 
         const showAdFunc = () => {
+            if (!canClick) return;
             adBtn.disableInteractive(); adText.disableInteractive(); 
             if (adTween) adTween.stop();
             adBtn.setScale(1); adBtn.setFillStyle(0xaaaaaa); adBtn.setStrokeStyle(0);
@@ -2188,22 +2286,33 @@ triggerGameOver(text) {
     }
 
     // 3. BOTONES SECUNDARIOS (Replay y Menú)
+    
     const t_replay = this.lang === 'es' ? 'JUGAR DE NUEVO' : 'REPLAY';
     const rb = this.add.rectangle(cx, btnY + 10, 240, 45, 0x1a7bc0).setInteractive().setDepth(1000);
     const rt = this.add.text(cx, btnY + 10, t_replay, { fontSize: '20px', fill: '#ddd', fontStyle: 'bold', fontFamily: 'Courier' }).setOrigin(0.5).setInteractive().setDepth(1001);
-    const rbDown = () => { rb.setScale(0.95); rt.setScale(0.95); rb.setFillStyle(0x115585); };
-    const rbUp = () => { rb.setScale(1); rt.setScale(1); rb.setFillStyle(0x1a7bc0); };
+    
+    // Aquí bloqueamos que el botón se hunda si está el seguro puesto
+    const rbDown = () => { if (!canClick) return; rb.setScale(0.95); rt.setScale(0.95); rb.setFillStyle(0x115585); };
+    const rbUp = () => { if (!canClick) return; rb.setScale(1); rt.setScale(1); rb.setFillStyle(0x1a7bc0); };
+    
     rb.on('pointerdown', rbDown); rt.on('pointerdown', rbDown); rb.on('pointerout', rbUp); rt.on('pointerout', rbUp); 
-    const rf = () => { rbUp(); this.scene.restart(); };
+    
+    // Aquí bloqueamos la acción real de reiniciar la partida
+    const rf = () => { if (!canClick) return; rbUp(); this.scene.restart(); };
     rb.on('pointerup', rf); rt.on('pointerup', rf);
 
     const t_menu = this.lang === 'es' ? 'SALIR AL MENÚ' : 'BACK TO MENU';
     const mb = this.add.rectangle(cx, btnY + 70, 240, 45, 0x555555).setInteractive().setDepth(1000);
     const mt = this.add.text(cx, btnY + 70, t_menu, { fontSize: '20px', fill: '#bbb', fontStyle: 'bold', fontFamily: 'Courier' }).setOrigin(0.5).setInteractive().setDepth(1001);
-    const mbDown = () => { mb.setScale(0.95); mt.setScale(0.95); mb.setFillStyle(0x333333); };
-    const mbUp = () => { mb.setScale(1); mt.setScale(1); mb.setFillStyle(0x555555); };
+    
+    // Aquí bloqueamos que el botón de menú se hunda
+    const mbDown = () => { if (!canClick) return; mb.setScale(0.95); mt.setScale(0.95); mb.setFillStyle(0x333333); };
+    const mbUp = () => { if (!canClick) return; mb.setScale(1); mt.setScale(1); mb.setFillStyle(0x555555); };
+    
     mb.on('pointerdown', mbDown); mt.on('pointerdown', mbDown); mb.on('pointerout', mbUp); mt.on('pointerout', mbUp);
-    const mf = () => { mbUp(); this.scene.start('MainMenu'); };
+    
+    // Aquí bloqueamos la acción real de salir al menú
+    const mf = () => { if (!canClick) return; mbUp(); this.scene.start('MainMenu'); };
     mb.on('pointerup', mf); mt.on('pointerup', mf);
     
     this.gameOverUI.push(rb, rt, mb, mt);

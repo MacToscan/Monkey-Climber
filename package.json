@@ -12,9 +12,11 @@
     "vite": "^7.2.4"
   },
   "dependencies": {
+    "@capacitor-community/keep-awake": "^8.0.0",
     "@capacitor/android": "^8.2.0",
     "@capacitor/cli": "^7.6.0",
     "@capacitor/core": "^8.2.0",
+    "@capacitor/status-bar": "^8.0.1",
     "phaser": "^3.90.0"
   }
 }
