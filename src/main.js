@@ -2,137 +2,44 @@
 import './style.css'
 import Phaser from 'phaser'
 
-// ================== CONFIGURACIÓN DE SKINS (DATOS) ==================
 // ================== CONFIGURACIÓN DE SKINS ==================
 const SKINS = [
-  // --- FAMILIA: PRINCIPALES ---
-  { 
-    id: 'monkey', 
-    name: 'Monklimb',  // <--- Nuevo nombre
-    family: 'Principales', 
-    price: 0, 
-    shopImg: 'figureClimber', 
-    scaleShop: 2.5 
-  },
-  { 
-    id: 'monkeyBro', 
-    name: 'Climbro',   // <--- Nuevo nombre
-    family: 'Principales', 
-    price: 0, 
-    shopImg: 'figureBro', 
-    scaleShop: 2.5 
-  },
-
-  // --- FAMILIA: DRAGON BROLL ---
-  { 
-    id: 'broku', 
-    name: 'Broku', 
-    family: 'Dragon Broll', 
-    price: 5, 
-    shopImg: 'figureBroku', 
-    scaleShop: 2.5 // Ajustado un pelin
-  },
-
-  { 
-    id: 'brogeta', 
-    name: 'Brogeta', 
-    family: 'Dragon Broll', 
-    price: 6, 
-    shopImg: 'figureBrogeta', 
-    scaleShop: 2.5 
-  },
-
-  // ... (después de Brogeta) ...
-  { 
-    id: 'broccolo', 
-    name: 'Broccolo', 
-    family: 'Dragon Broll', 
-    price: 5, 
-    shopImg: 'figureBroccolo', 
-    scaleShop: 2.8 
-  },
-  { id: 'db_soon1', name: '???', family: 'Dragon Broll', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
-  { id: 'db_soon2', name: '???', family: 'Dragon Broll', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
-  { id: 'db_soon3', name: '???', family: 'Dragon Broll', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
-
-
-  // --- FAMILIA: THE SIMPSBRON ---
-  { 
-    id: 'bromer', 
-    name: 'Bromer', 
-    family: 'The Simpsbron', 
-    price: 1, 
-    shopImg: 'figureBromer', 
-    scaleShop: 2.5 
-  },
-
-  { 
-    id: 'brusty', 
-    name: 'Brusty', 
-    family: 'The Simpsbron', 
-    price: 1, // Un poco más caro que Bromer
-    shopImg: 'figureBrusty', 
-    scaleShop: 2.5 
-  },
-  // ... (después de Brusty) ...
-  { 
-    id: 'bort', 
-    name: 'Bort', 
-    family: 'The Simpsbron', 
-    price: 12, 
-    shopImg: 'figureBort', 
-    scaleShop: 2.3 
-  },
-  { id: 'sb_soon1', name: '???', family: 'The Simpsbron', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
-  { id: 'sb_soon2', name: '???', family: 'The Simpsbron', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
-  { id: 'sb_soon3', name: '???', family: 'The Simpsbron', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
-
-  // --- FAMILIA: MARBREL ---
-  { 
-    id: 'brhulk', 
-    name: 'Brhulk', 
-    family: 'Marbrel', 
-    price: 5, 
-    shopImg: 'figureBrhulk', 
-    scaleShop: 2.8 
-  },
-
-  { 
-    id: 'brolverine', 
-    name: 'Brolverine', 
-    family: 'Marbrel', 
-    price: 2, // Un poco más caro que Brhulk
-    shopImg: 'figureBrolverine', 
-    scaleShop: 2.8 
-  },
-
-  { 
-    id: 'spiderbro', // ID en minúsculas y junto para evitar líos
-    name: 'Spider-Bro', 
-    family: 'Marbrel', 
-    price: 3, // Un precio heroico
-    shopImg: 'figureSpiderBro', 
-    scaleShop: 2.8 
-  },
-  { id: 'mb_soon1', name: '???', family: 'Marbrel', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
-  { id: 'mb_soon2', name: '???', family: 'Marbrel', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
-  { id: 'mb_soon3', name: '???', family: 'Marbrel', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
-
-  // --- FAMILIA: MÍTICOS ---
-  { 
-    id: 'spongebrob', 
-    name: 'SpongeBrob', 
-    family: 'Míticos', 
-    price: 10, // ¡Ponle el precio que consideres!
-    shopImg: 'figureSpongeBrob', 
-    scaleShop: 2.8 
-  },
-  { id: 'mt_soon1', name: '???', family: 'Míticos', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
-  { id: 'mt_soon2', name: '???', family: 'Míticos', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
-  { id: 'mt_soon3', name: '???', family: 'Míticos', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
-  { id: 'mt_soon4', name: '???', family: 'Míticos', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
-  { id: 'mt_soon5', name: '???', family: 'Míticos', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
-];
+    // --- FAMILIA: PRINCIPALES ---
+    { id: 'monkey', name: 'Monklimb', family: 'Principales', price: 0, shopImg: 'figureClimber', scaleShop: 2.5 },
+    { id: 'monkeyBro', name: 'Climbro', family: 'Principales', price: 0, shopImg: 'figureBro', scaleShop: 2.5 },
+  
+    // --- FAMILIA: THE SIMPSBRON (Ganchos baratos para empezar) ---
+    { id: 'bromer', name: 'Bromer', family: 'The Simpsbron', price: 150, shopImg: 'figureBromer', scaleShop: 2.5 },
+    { id: 'brusty', name: 'Brusty', family: 'The Simpsbron', price: 300, shopImg: 'figureBrusty', scaleShop: 2.5 },
+    { id: 'bort', name: 'Bort', family: 'The Simpsbron', price: 600, shopImg: 'figureBort', scaleShop: 2.3 }, // El meme caro
+    { id: 'sb_soon1', name: '???', family: 'The Simpsbron', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
+    { id: 'sb_soon2', name: '???', family: 'The Simpsbron', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
+    { id: 'sb_soon3', name: '???', family: 'The Simpsbron', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
+  
+    // --- FAMILIA: MARBREL (Nivel Medio) ---
+    { id: 'spiderbro', name: 'Spider-Bro', family: 'Marbrel', price: 150, shopImg: 'figureSpiderBro', scaleShop: 2.8 },
+    { id: 'brolverine', name: 'Brolverine', family: 'Marbrel', price: 300, shopImg: 'figureBrolverine', scaleShop: 2.8 },
+    { id: 'brhulk', name: 'Brulk', family: 'Marbrel', price: 600, shopImg: 'figureBrhulk', scaleShop: 2.8 }, // Gigante = Más caro
+    { id: 'mb_soon1', name: '???', family: 'Marbrel', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
+    { id: 'mb_soon2', name: '???', family: 'Marbrel', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
+    { id: 'mb_soon3', name: '???', family: 'Marbrel', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
+  
+    // --- FAMILIA: DRAGON BROLL (Los más deseados) ---
+    { id: 'broku', name: 'Broku', family: 'Dragon Broll', price: 200, shopImg: 'figureBroku', scaleShop: 2.5 },
+    { id: 'broccolo', name: 'Broccolo', family: 'Dragon Broll', price: 400, shopImg: 'figureBroccolo', scaleShop: 2.8 },
+    { id: 'brogeta', name: 'Brogeta', family: 'Dragon Broll', price: 600, shopImg: 'figureBrogeta', scaleShop: 2.5 },
+    { id: 'db_soon1', name: '???', family: 'Dragon Broll', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
+    { id: 'db_soon2', name: '???', family: 'Dragon Broll', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
+    { id: 'db_soon3', name: '???', family: 'Dragon Broll', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
+  
+    // --- FAMILIA: MÍTICOS (Objetivo Final actual) ---
+    { id: 'spongebrob', name: 'SpongeBrob', family: 'Míticos', price: 600, shopImg: 'figureSpongeBrob', scaleShop: 2.8 },
+    { id: 'mt_soon1', name: '???', family: 'Míticos', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
+    { id: 'mt_soon2', name: '???', family: 'Míticos', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
+    { id: 'mt_soon3', name: '???', family: 'Míticos', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
+    { id: 'mt_soon4', name: '???', family: 'Míticos', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
+    { id: 'mt_soon5', name: '???', family: 'Míticos', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
+  ];
 
 // ================== ESCENA 0: SPLASH SCREEN (LOGO COMPLETO) ==================
 class SplashScene extends Phaser.Scene {
@@ -146,42 +53,44 @@ class SplashScene extends Phaser.Scene {
   }
 
   create() {
-      const width = this.scale.width;
-      const height = this.scale.height;
-      const centerX = width * 0.5;
-      const centerY = height * 0.5;
+    const width = this.scale.width;
+    const height = this.scale.height;
+    const centerX = width * 0.5;
+    const centerY = height * 0.5;
 
-      // Color de fondo por si la imagen tarda un milisegundo en cargar
-      this.cameras.main.setBackgroundColor('#061423'); 
+    // Fondo oscuro
+    this.cameras.main.setBackgroundColor('#061423'); 
+    
+    // Añadimos el logo con transparencia 0 (invisible) para que aparezca poco a poco
+    this.logo = this.add.image(centerX, centerY, 'logo_toscandev').setAlpha(0);
 
-      // Añadimos el póster en el centro
-      this.logo = this.add.image(centerX, centerY, 'logo_toscandev');
+    const scaleX = width / this.logo.width;
+    const scaleY = height / this.logo.height;
+    const scale = Math.max(scaleX, scaleY); 
+    this.logo.setScale(scale);
 
-      // --- MAGIA: ADAPTAR A PANTALLA COMPLETA SIN DEFORMAR ---
-      const scaleX = width / this.logo.width;
-      const scaleY = height / this.logo.height;
-      const scale = Math.max(scaleX, scaleY); // Coge el lado que necesite más zoom para tapar huecos
-      this.logo.setScale(scale);
+    // --- LA MAGIA ORGÁNICA (Sin tocar nada) ---
+    // 1. El logo aparece suavemente desde las sombras (Fade In de 1 segundo)
+    this.tweens.add({
+        targets: this.logo,
+        alpha: 1,
+        duration: 1000,
+        ease: 'Power2',
+        onComplete: () => {
+            // 2. Se queda estático brillando durante 1.5 segundos
+            this.time.delayedCall(1500, () => {
+                
+                // 3. Fundido a negro muy suave (800ms) y salta al Menú Principal
+                this.cameras.main.fadeOut(800, 0, 0, 0);
+                this.cameras.main.once('camerafadeoutcomplete', () => {
+                    this.scene.start('MainMenu');
+                });
+            });
+        }
+    });
 
-      // Empezamos con el logo invisible
-      this.logo.setAlpha(0);
-
-      // --- ANIMACIÓN: APARECER, ESPERAR Y DESAPARECER ---
-      this.tweens.chain({
-          targets: this.logo,
-          tweens: [
-              { alpha: 1, duration: 800, ease: 'Sine.easeInOut' }, // Aparece
-              { alpha: 1, duration: 1500 },                        // Se queda quieto
-              { alpha: 0, duration: 800, ease: 'Sine.easeInOut' }  // Desaparece
-          ],
-          onComplete: () => {
-              // Pasa al Menú Principal
-              this.scene.start('MainMenu');
-          }
-      });
-
-      this.scale.on('resize', this.resize, this);
-  }
+    this.scale.on('resize', this.resize, this);
+}
 
   resize(gameSize) {
       const width = gameSize.width;
@@ -912,6 +821,11 @@ class GameScene extends Phaser.Scene {
 
     // 2. Contenedor de estrellas (Oculto al empezar)
     this.starsContainer = this.add.container(0, 0).setDepth(-7).setAlpha(0);
+
+    // -------- ESTADO --------
+    this.isGameOver = false;
+    this.hasRevived = false;  // <--- NUEVA: Controla si ya ha gastado su vida extra
+    this.gameStarted = false;
     
     // Generar 40 estrellas que titilan de forma asíncrona
     for (let i = 0; i < 40; i++) {
@@ -1290,24 +1204,14 @@ if (this.textures.exists('spongebrob')) {
            this.tweens.add({ targets: this.gameMusic, volume: 0.4, duration: 1000 });
        }
 
-       // Empezar a generar enemigos y plátanos
-       // --- PUNTO 6: SI HAY CHILI NO HAY BANANA ---
-       this.itemCounter = 0; // Contador de objetos
+       // --- PUNTO 6: GENERACIÓN POR DISTANCIA ---
+       this.itemCounter = 0; 
+       this.itemSpawnAccumulator = 0; // Medidor de distancia para objetos
+       this.nextItemSpawnDistance = 600; // Un plátano cada 600 píxeles aprox.
        
-       this.time.addEvent({ delay: 1500, loop: true, callback: () => {
-           this.itemCounter++;
-           // Cada 20 "turnos" (unos 30 segundos), instanciamos un Chili en lugar de una Banana
-           if (this.itemCounter % 20 === 0) {
-               this.spawnChili();
-           } else {
-               this.spawnBanana();
-           }
-       }});
+       // Generar una nube nueva cada 2 o 4 segundos (Esta la dejamos por tiempo, es solo decorativa)
+       this.time.addEvent({ delay: Phaser.Math.Between(2000, 4000), loop: true, callback: () => this.spawnCloud() });
        
-       // Generar una nube nueva cada 2 o 4 segundos (Esta la dejamos igual)
-       this.time.addEvent({ delay: Phaser.Math.Between(2000, 4000), loop: true, callback: () => this.spawnCloud() });
-       // Generar una nube nueva cada 2 o 4 segundos
-       this.time.addEvent({ delay: Phaser.Math.Between(2000, 4000), loop: true, callback: () => this.spawnCloud() });
    });
    // -------------------------------------
 
@@ -1418,32 +1322,44 @@ spawnCloud(randomY = false) {
     });
     this.realignTrunks();
 
-    // === SPAWN POR DISTANCIA (AJUSTADO) ===
-    this.spawnAccumulator += move; 
+    // === SPAWN DE ENEMIGOS POR DISTANCIA ===
+    this.spawnAccumulator += move;
     if (this.spawnAccumulator >= this.nextSpawnDistance) {
         
         const roll = Phaser.Math.Between(0, 100);
-        
-        // Lógica de Niveles
-        // --- PUNTO 2: ORDEN DE ENEMIGOS SEGÚN NIVEL ---
+
+        // Curva de dificultad que programamos:
         if (this.level < 3) {
-            // Niveles 0, 1 y 2: Solo salen Orugas
             this.spawnOruga();
         } 
         else if (this.level === 3) {
-            // Nivel 3: Orugas (60%) y Arañas (40%)
             if (roll < 40) this.spawnSpider();
             else this.spawnOruga();
         } 
         else {
-            // Nivel 4 en adelante: Orugas (40%), Arañas (30%) y Abejas (30%)
             if (roll < 30) this.spawnSpider();
             else if (roll < 60) this.spawnBee(); 
             else this.spawnOruga();
         }
 
         this.spawnAccumulator = 0;
-        this.nextSpawnDistance = Phaser.Math.Between(400, 700);
+        this.nextSpawnDistance = Phaser.Math.Between(300, 600); // Distancia aleatoria entre enemigos
+    }
+
+    // === SPAWN DE OBJETOS (BANANAS / CHILIS) POR DISTANCIA ===
+    this.itemSpawnAccumulator += move;
+    if (this.itemSpawnAccumulator >= this.nextItemSpawnDistance) {
+        
+        this.itemCounter++;
+        // Cada 20 objetos instanciamos un Chili en lugar de una Banana
+        if (this.itemCounter % 20 === 0) {
+            this.spawnChili();
+        } else {
+            this.spawnBanana();
+        }
+
+        this.itemSpawnAccumulator = 0;
+        this.nextItemSpawnDistance = Phaser.Math.Between(400, 800); // Distancia un poco aleatoria para que no se vea robótico
     }
 
     // Reciclaje Troncos
@@ -1880,7 +1796,7 @@ spawnChili() {
         this.monkeySprite.setTint(0xff4500); 
         
         // --- PUNTO 5: DURACIÓN DE x SEGUNDO (x) ---
-        this.time.delayedCall(2500, () => { 
+        this.time.delayedCall(2200, () => { 
             this.gameSpeed -= speedBoost; 
             this.monkeySprite.clearTint(); 
             this.isTurbo = false; 
@@ -1986,10 +1902,8 @@ spawnChili() {
     }
 
     // ==========================================
-      // --- MAGIA: TRANSICIÓN RÁPIDA A LA NOCHE (4 SEGUNDOS) ---
+      // --- MAGIA: TRANSICIÓN RÁPIDA A LA NOCHE (NIVEL 5) ---
       // ==========================================
-      
-      // Elegimos el Nivel 5 (por ejemplo) para que se haga de noche de golpe
       if (this.level === 5) {
           
         // FASE 1: Entra el atardecer naranja (Dura 1,5 segundos)
@@ -1997,20 +1911,42 @@ spawnChili() {
         this.cloudsGroup.children.iterate(c => c.setTint(this.cloudTint));
         this.tweens.add({ targets: this.sunsetBg, alpha: 0.8, duration: 1500 }); 
         
-        // FASE 2: Justo a los 2 segundos, cruzamos a la Noche y salen las estrellas
-        this.time.delayedCall(2000, () => {
+        // FASE 2: Justo a los 1 segundos, cruzamos a la Noche y salen las estrellas
+        this.time.delayedCall(1000, () => {
             this.cloudTint = 0x555577; // Nubes oscuras
             this.cloudsGroup.children.iterate(c => c.setTint(this.cloudTint));
             
-            // Se apaga el naranja y se enciende el azul oscuro a la vez (otros 2 segundos)
+            // Se apaga el naranja y se enciende el azul oscuro a la vez
             this.tweens.add({ targets: this.sunsetBg, alpha: 0, duration: 2000 }); 
             this.tweens.add({ targets: this.nightBg, alpha: 1, duration: 2000 });
             
             // Las estrellas aparecen brillando junto con la noche
             this.tweens.add({ targets: this.starsContainer, alpha: 1, duration: 2000 });
         });
+      } // <--- ¡AQUÍ CERRAMOS EL NIVEL 5!
+
+      // ==========================================
+      // --- MAGIA: AMANECER (NIVEL 10) ---
+      // ==========================================
+      if (this.level === 10) {
+          
+        // FASE 1: Se van las estrellas, desaparece la noche y entra el naranja del amanecer
+        this.cloudTint = 0xffccaa; 
+        this.cloudsGroup.children.iterate(c => c.setTint(this.cloudTint));
+        
+        this.tweens.add({ targets: this.starsContainer, alpha: 0, duration: 2000 }); 
+        this.tweens.add({ targets: this.nightBg, alpha: 0, duration: 2000 });        
+        this.tweens.add({ targets: this.sunsetBg, alpha: 0.8, duration: 2000 });     
+        
+        // FASE 2: A los 2 segundos, el naranja se desvanece dejando el cielo azul brillante
+        this.time.delayedCall(2000, () => {
+            this.cloudTint = 0xffffff; 
+            this.cloudsGroup.children.iterate(c => c.setTint(this.cloudTint));
+            
+            this.tweens.add({ targets: this.sunsetBg, alpha: 0, duration: 2000 }); 
+        });
+      }
     }
-}
   
   hit() {
     if (this.isInvulnerable) return;
@@ -2115,80 +2051,163 @@ triggerGameOver(text) {
     if (this.isGameOver) return;
 
     this.gameOverSound.play();
-
-    // --- PARAR MÚSICA AL MORIR ---
     if (this.gameMusic) this.gameMusic.stop();
 
-    // --- CONGELAR EL JUEGO ---
+    // --- CONGELAR EL JUEGO AL 100% ---
     this.isGameOver = true; 
-    this.physics.pause(); 
-    this.monkeySprite.stop();
+    this.physics.pause();        
     
-    this.obstacles.children.iterate(o => { 
-        if (o && o.anims) o.stop(); 
-    });
+    this.monkeySprite.stop();
+    this.obstacles.children.iterate(o => { if (o && o.anims) o.stop(); });
+    this.spiders.children.iterate(s => { if (s && s.anims) s.stop(); });
+    this.bees.children.iterate(b => { if (b && b.anims) b.stop(); });
 
     // --- GUARDAR PUNTUACIONES ---
     const best = parseInt(localStorage.getItem('monkey_highscore') || 0);
-    if (this.score > best) {
-        localStorage.setItem('monkey_highscore', this.score);
-    }
+    if (this.score > best) localStorage.setItem('monkey_highscore', this.score);
     localStorage.setItem('monkey_bananas', this.totalBananas);
 
-    // --- MEDIDAS PARA LA UI ---
+    // --- MEDIDAS Y GRUPO DE UI ---
+    // Metemos todo en un array para poder "destruirlo" y limpiar la pantalla si decide revivir
+    this.gameOverUI = []; 
+
     const w = this.scale.width; 
     const h = this.scale.height; 
     const cx = w * 0.5; 
     const cy = h * 0.5;
 
-    // --- FONDO OSCURO ---
-    const ov = this.add.rectangle(cx, cy, w, h, 0x000000); 
-    ov.setAlpha(0.8).setDepth(999);
-
-    // --- TEXTO PRINCIPAL (FELL! o GAME OVER!) ---
-    this.add.text(cx, cy - 100, text, { 
-        fontSize: '45px', 
-        fill: '#ff4444', 
-        fontStyle: 'bold', 
-        stroke: '#000', 
-        strokeThickness: 6,
-        fontFamily: 'Courier'
+    const ov = this.add.rectangle(cx, cy, w, h, 0x000000).setAlpha(0.8).setDepth(999);
+    
+    const titleText = this.add.text(cx, cy - 120, text, { 
+        fontSize: '45px', fill: '#ff4444', fontStyle: 'bold', stroke: '#000', strokeThickness: 6, fontFamily: 'Courier'
     }).setOrigin(0.5).setDepth(1000);
 
-    // --- MARCADOR FINAL ---
     const t_score = this.lang === 'es' ? 'Puntos' : 'Score';
-    
-    this.add.text(cx, cy - 20, `${t_score}: ${this.score}m`, { 
+    const scoreTextObj = this.add.text(cx, cy - 50, `${t_score}: ${this.score}m`, { 
         fontSize: '28px', fill: '#ffffff', fontStyle: 'bold', fontFamily: 'Courier' 
     }).setOrigin(0.5).setDepth(1000);
     
-    this.add.text(cx, cy + 20, `Bananas: ${this.sessionBananas} 🍌`, { 
+    const sessionBananasText = this.add.text(cx, cy - 10, `Bananas: ${this.sessionBananas} 🍌`, { 
         fontSize: '28px', fill: '#ffff00', fontStyle: 'bold', fontFamily: 'Courier' 
     }).setOrigin(0.5).setDepth(1000);
 
-    // --- BOTÓN REPLAY ---
-    const t_replay = this.lang === 'es' ? 'TOCA PARA REPETIR' : 'TAP TO REPLAY';
-    const rb = this.add.rectangle(cx, cy + 100, 280, 50, 0x2d9bf0).setInteractive().setDepth(1000);
-    const rt = this.add.text(cx, cy + 100, t_replay, { 
-        fontSize: '22px', fill: '#fff', fontStyle: 'bold', fontFamily: 'Courier' 
-    }).setOrigin(0.5).setInteractive().setDepth(1001);
-    
-    const rf = () => this.scene.restart(); 
-    rb.on('pointerup', rf); 
-    rt.on('pointerup', rf);
+    this.gameOverUI.push(ov, titleText, scoreTextObj, sessionBananasText);
 
-    // --- BOTÓN MENÚ PRINCIPAL ---
-    const t_menu = this.lang === 'es' ? 'MENÚ PRINCIPAL' : 'MAIN MENU';
-    const mb = this.add.rectangle(cx, cy + 170, 280, 50, 0xff8c00).setInteractive().setDepth(1000);
-    const mt = this.add.text(cx, cy + 170, t_menu, { 
-        fontSize: '22px', fill: '#fff', fontStyle: 'bold', fontFamily: 'Courier' 
-    }).setOrigin(0.5).setInteractive().setDepth(1001);
+    // =========================================================
+    // --- LÓGICA DE BOTONES APILADOS DINÁMICAMENTE ---
+    // =========================================================
+    let btnY = cy + 55; // Posición Y donde empieza a colocarse el primer botón
+
+    // 1. BOTÓN REVIVIR (Solo sale 1 vez por partida)
+    if (!this.hasRevived) {
+        const t_revive = this.lang === 'es' ? '¡REVIVIR! 📺' : 'REBORN! 📺';
+        const revBtn = this.add.rectangle(cx, btnY, 300, 60, 0x2ca02c).setInteractive().setDepth(1000); 
+        revBtn.setStrokeStyle(4, 0xffffff);
+        const revText = this.add.text(cx, btnY, t_revive, { fontSize: '26px', fill: '#ffffff', fontStyle: 'bold', fontFamily: 'Courier' }).setOrigin(0.5).setInteractive().setDepth(1001);
+        
+        const revTween = this.tweens.add({ targets: [revBtn, revText], scaleX: 1.08, scaleY: 1.08, duration: 400, yoyo: true, repeat: -1, ease: 'Quad.easeInOut' });
+
+        const reviveAction = () => {
+            revBtn.disableInteractive(); revText.disableInteractive(); revTween.stop();
+            revBtn.setScale(1); revBtn.setFillStyle(0xaaaaaa); revBtn.setStrokeStyle(0);
+            revText.setText(this.lang === 'es' ? 'CARGANDO...' : 'LOADING...');
+
+            // SIMULACIÓN DE ANUNCIO DE REVIVIR
+            setTimeout(() => {
+                this.hasRevived = true;
+                
+                // 1. Limpiar pantalla de Game Over
+                this.gameOverUI.forEach(el => el.destroy());
+
+                // 2. Colocar al mono en el centro y darle invulnerabilidad
+                this.player.x = cx;
+                this.player.y = h * 0.75;
+                this.isInvulnerable = true;
+                
+                // Efecto de parpadeo (Escudo temporal)
+                this.tweens.add({ targets: this.player, alpha: 0.2, duration: 200, yoyo: true, repeat: 8 });
+                setTimeout(() => { this.isInvulnerable = false; this.player.setAlpha(1); }, 3500);
+
+                // 3. Reanudar motor del juego y animaciones
+                this.isGameOver = false;
+                this.physics.resume();
+                if (this.gameMusic) this.gameMusic.play();
+                
+                // Reanudar animaciones
+                const currentAnim = this.monkeySprite.anims.currentAnim ? this.monkeySprite.anims.currentAnim.key : 'climb';
+                this.monkeySprite.play(currentAnim);
+                this.obstacles.children.iterate(o => { if (o && o.anims) o.resume(); });
+                this.spiders.children.iterate(s => { if (s && s.anims) s.resume(); });
+                this.bees.children.iterate(b => { if (b && b.anims) b.resume(); });
+
+            }, 2000);
+        };
+        revBtn.on('pointerup', reviveAction); revText.on('pointerup', reviveAction);
+        this.gameOverUI.push(revBtn, revText);
+        
+        btnY += 75; // Bajamos el siguiente botón
+    }
+
+    // 2. BOTÓN X2 BANANAS
+    if (this.sessionBananas > 0) {
+        const t_ad = this.lang === 'es' ? '¡RECLAMAR X2! 📺' : 'CLAIM X2! 📺';
+        const adBtn = this.add.rectangle(cx, btnY, 300, 60, 0xffd700).setInteractive().setDepth(1000); 
+        adBtn.setStrokeStyle(4, 0xffffff);
+        const adText = this.add.text(cx, btnY, t_ad, { fontSize: '26px', fill: '#000000', fontStyle: 'bold', fontFamily: 'Courier' }).setOrigin(0.5).setInteractive().setDepth(1001);
+
+        // Si ya usó revivir, el botón de doblar es el que late. Si no, late el de revivir para no marear.
+        let adTween = null;
+        if (this.hasRevived) {
+            adTween = this.tweens.add({ targets: [adBtn, adText], scaleX: 1.10, scaleY: 1.10, duration: 400, yoyo: true, repeat: -1, ease: 'Quad.easeInOut' });
+        }
+
+        const showAdFunc = () => {
+            adBtn.disableInteractive(); adText.disableInteractive(); 
+            if (adTween) adTween.stop();
+            adBtn.setScale(1); adBtn.setFillStyle(0xaaaaaa); adBtn.setStrokeStyle(0);
+            adText.setText(this.lang === 'es' ? 'CARGANDO...' : 'LOADING...');
+
+            setTimeout(() => {
+                this.totalBananas += this.sessionBananas; 
+                this.sessionBananas *= 2; 
+                localStorage.setItem('monkey_bananas', this.totalBananas);
+                
+                this.cameras.main.flash(400, 255, 255, 0); 
+                sessionBananasText.setText(`Bananas: ${this.sessionBananas} 🍌`);
+                this.tweens.add({ targets: sessionBananasText, scaleX: 1.5, scaleY: 1.5, duration: 300, yoyo: true });
+                
+                adBtn.setFillStyle(0x2ca02c); 
+                adText.setFill('#ffffff');
+                adText.setText(this.lang === 'es' ? '¡CONSEGUIDO!' : 'ALRIGHT!');
+            }, 2000);
+        };
+        adBtn.on('pointerup', showAdFunc); adText.on('pointerup', showAdFunc);
+        this.gameOverUI.push(adBtn, adText);
+        
+        btnY += 75; // Bajamos el siguiente botón
+    }
+
+    // 3. BOTONES SECUNDARIOS (Replay y Menú)
+    const t_replay = this.lang === 'es' ? 'JUGAR DE NUEVO' : 'REPLAY';
+    const rb = this.add.rectangle(cx, btnY + 10, 240, 45, 0x1a7bc0).setInteractive().setDepth(1000);
+    const rt = this.add.text(cx, btnY + 10, t_replay, { fontSize: '20px', fill: '#ddd', fontStyle: 'bold', fontFamily: 'Courier' }).setOrigin(0.5).setInteractive().setDepth(1001);
+    const rbDown = () => { rb.setScale(0.95); rt.setScale(0.95); rb.setFillStyle(0x115585); };
+    const rbUp = () => { rb.setScale(1); rt.setScale(1); rb.setFillStyle(0x1a7bc0); };
+    rb.on('pointerdown', rbDown); rt.on('pointerdown', rbDown); rb.on('pointerout', rbUp); rt.on('pointerout', rbUp); 
+    const rf = () => { rbUp(); this.scene.restart(); };
+    rb.on('pointerup', rf); rt.on('pointerup', rf);
+
+    const t_menu = this.lang === 'es' ? 'SALIR AL MENÚ' : 'BACK TO MENU';
+    const mb = this.add.rectangle(cx, btnY + 70, 240, 45, 0x555555).setInteractive().setDepth(1000);
+    const mt = this.add.text(cx, btnY + 70, t_menu, { fontSize: '20px', fill: '#bbb', fontStyle: 'bold', fontFamily: 'Courier' }).setOrigin(0.5).setInteractive().setDepth(1001);
+    const mbDown = () => { mb.setScale(0.95); mt.setScale(0.95); mb.setFillStyle(0x333333); };
+    const mbUp = () => { mb.setScale(1); mt.setScale(1); mb.setFillStyle(0x555555); };
+    mb.on('pointerdown', mbDown); mt.on('pointerdown', mbDown); mb.on('pointerout', mbUp); mt.on('pointerout', mbUp);
+    const mf = () => { mbUp(); this.scene.start('MainMenu'); };
+    mb.on('pointerup', mf); mt.on('pointerup', mf);
     
-    const mf = () => this.scene.start('MainMenu'); 
-    mb.on('pointerup', mf); 
-    mt.on('pointerup', mf);
-  }
-} // <--- Cierre de tu clase GameScene
+    this.gameOverUI.push(rb, rt, mb, mt);
+}} // <--- Cierre de tu clase GameScene
 
 // ================== CONFIG ==================
 const config = {
