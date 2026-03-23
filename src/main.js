@@ -6,35 +6,35 @@ import { KeepAwake } from '@capacitor-community/keep-awake';
 // ================== CONFIGURACIÓN DE SKINS ==================
 const SKINS = [
     // --- FAMILIA: PRINCIPALES ---
-    { id: 'monkey', name: 'Monklimb', family: 'Principales', price: 0, shopImg: 'figureClimber', scaleShop: 2.5 },
-    { id: 'monkeyBro', name: 'Climbro', family: 'Principales', price: 0, shopImg: 'figureBro', scaleShop: 2.5 },
+    { id: 'monkey', name: 'Monklimb', family: 'Monkeys', price: 0, shopImg: 'figureClimber', scaleShop: 2.5 },
+    { id: 'monkeyBro', name: 'Climbro', family: 'Monkeys', price: 0, shopImg: 'figureBro', scaleShop: 2.5 },
   
     // --- FAMILIA: THE SIMPSBRON (Ganchos baratos para empezar) ---
     { id: 'bromer', name: 'Bromer', family: 'The Simpsbron', price: 1, shopImg: 'figureBromer', scaleShop: 2.5 },
-    { id: 'brusty', name: 'Brusty', family: 'The Simpsbron', price: 300, shopImg: 'figureBrusty', scaleShop: 2.5 },
-    { id: 'bort', name: 'Bort', family: 'The Simpsbron', price: 600, shopImg: 'figureBort', scaleShop: 2.3 }, // El meme caro
-    { id: 'sb_soon1', name: '???', family: 'The Simpsbron', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
+    { id: 'brusty', name: 'Brusty', family: 'The Simpsbron', price: 3, shopImg: 'figureBrusty', scaleShop: 2.5 },
+    { id: 'bort', name: 'Bort', family: 'The Simpsbron', price: 4, shopImg: 'figureBort', scaleShop: 2.3 }, // El meme caro
+    { id: 'brolhouse', name: 'Brolhouse', family: 'The Simpsbron', price: 5, shopImg: 'figureBrolhouse', scaleShop: 2.3 },
     { id: 'sb_soon2', name: '???', family: 'The Simpsbron', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
     { id: 'sb_soon3', name: '???', family: 'The Simpsbron', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
   
     // --- FAMILIA: MARBREL (Nivel Medio) ---
     { id: 'spiderbro', name: 'Spider-Bro', family: 'Marbrel', price: 1, shopImg: 'figureSpiderBro', scaleShop: 2.8 },
-    { id: 'brolverine', name: 'Brolverine', family: 'Marbrel', price: 300, shopImg: 'figureBrolverine', scaleShop: 2.8 },
-    { id: 'brhulk', name: 'Brulk', family: 'Marbrel', price: 600, shopImg: 'figureBrhulk', scaleShop: 2.8 }, // Gigante = Más caro
-    { id: 'mb_soon1', name: '???', family: 'Marbrel', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
+    { id: 'brolverine', name: 'Brolverine', family: 'Marbrel', price: 3, shopImg: 'figureBrolverine', scaleShop: 2.8 },
+    { id: 'deadbrool', name: 'Deadbrool', family: 'Marbrel', price: 4, shopImg: 'figureDeadbrool', scaleShop: 2.8 },
+    { id: 'brhulk', name: 'Brulk', family: 'Marbrel', price: 6, shopImg: 'figureBrhulk', scaleShop: 2.8 }, // Gigante = Más caro
     { id: 'mb_soon2', name: '???', family: 'Marbrel', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
     { id: 'mb_soon3', name: '???', family: 'Marbrel', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
   
     // --- FAMILIA: DRAGON BROLL (Los más deseados) ---
-    { id: 'broku', name: 'Broku', family: 'Dragon Broll', price: 200, shopImg: 'figureBroku', scaleShop: 2.5 },
-    { id: 'broccolo', name: 'Broccolo', family: 'Dragon Broll', price: 400, shopImg: 'figureBroccolo', scaleShop: 2.8 },
-    { id: 'brogeta', name: 'Brogeta', family: 'Dragon Broll', price: 600, shopImg: 'figureBrogeta', scaleShop: 2.5 },
-    { id: 'db_soon1', name: '???', family: 'Dragon Broll', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
+    { id: 'broku', name: 'Broku', family: 'Dragon Broll', price: 2, shopImg: 'figureBroku', scaleShop: 2.5 },
+    { id: 'broccolo', name: 'Broccolo', family: 'Dragon Broll', price: 4, shopImg: 'figureBroccolo', scaleShop: 2.8 },
+    { id: 'brogeta', name: 'Brogeta', family: 'Dragon Broll', price: 6, shopImg: 'figureBrogeta', scaleShop: 2.5 },
+    { id: 'breezer', name: 'Breezer', family: 'Dragon Broll', price: 6, shopImg: 'figureBreezer', scaleShop: 2.8 },
     { id: 'db_soon2', name: '???', family: 'Dragon Broll', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
     { id: 'db_soon3', name: '???', family: 'Dragon Broll', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
   
     // --- FAMILIA: MÍTICOS (Objetivo Final actual) ---
-    { id: 'spongebrob', name: 'SpongeBrob', family: 'Míticos', price: 600, shopImg: 'figureSpongeBrob', scaleShop: 2.8 },
+    { id: 'spongebrob', name: 'SpongeBrob', family: 'Míticos', price: 6, shopImg: 'figureSpongeBrob', scaleShop: 2.8 },
     { id: 'mt_soon1', name: '???', family: 'Míticos', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
     { id: 'mt_soon2', name: '???', family: 'Míticos', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
     { id: 'mt_soon3', name: '???', family: 'Míticos', shopImg: 'figureUnknown', scaleShop: 3.5, comingSoon: true },
@@ -475,13 +475,16 @@ class ShopScene extends Phaser.Scene {
     this.load.image('figureBro', '/monkeybro-figure.png');
     this.load.image('figureBroku', '/broku-figure.png');
     this.load.image('figureBrogeta', '/brogeta-figure.png');
+    this.load.image('figureBreezer', '/breezer-figure.png');
     this.load.image('figureBroccolo', '/broccolo-figure.png');
     this.load.image('figureBrhulk', '/brhulk-figure.png');
     this.load.image('figureBrolverine', '/brolverine-figure.png');
     this.load.image('figureSpiderBro', '/spider-bro-figure.png');
+    this.load.image('figureDeadbrool', '/deadbrool-figure.png');
     this.load.image('figureBromer', '/bromer-figure.png');
     this.load.image('figureBrusty', '/brusty-figure.png');
     this.load.image('figureBort', '/bort-figure.png');
+    this.load.image('figureBrolhouse', '/brolhouse-figure.png');
     this.load.image('figureSpongeBrob', '/spongebrob-figure.png');
 }
 
@@ -775,12 +778,15 @@ class GameScene extends Phaser.Scene {
     this.load.spritesheet('broku', '/broku.png', { frameWidth: 40, frameHeight: 40 });
     this.load.spritesheet('brogeta', '/brogeta.png', { frameWidth: 40, frameHeight: 40 });
     this.load.spritesheet('broccolo', '/broccolo.png', { frameWidth: 40, frameHeight: 40 });
+    this.load.spritesheet('breezer', '/breezer.png', { frameWidth: 34, frameHeight: 34 });
     this.load.spritesheet('brhulk', '/brhulk.png', { frameWidth: 40, frameHeight: 40 });
     this.load.spritesheet('brolverine', '/brolverine.png', { frameWidth: 40, frameHeight: 40 });
     this.load.spritesheet('spiderbro', '/spider-bro.png', { frameWidth: 34, frameHeight: 34 });
+    this.load.spritesheet('deadbrool', '/deadbrool.png', { frameWidth: 34, frameHeight: 34 });
     this.load.spritesheet('bromer', '/bromer.png', { frameWidth: 40, frameHeight: 40 });
     this.load.spritesheet('brusty', '/brusty.png', { frameWidth: 40, frameHeight: 40 });
     this.load.spritesheet('bort', '/bort.png', { frameWidth: 40, frameHeight: 40 });
+    this.load.spritesheet('brolhouse', '/brolhouse.png', { frameWidth: 40, frameHeight: 40 });
     this.load.spritesheet('spongebrob', '/spongebrob.png', { frameWidth: 34, frameHeight: 34 }); 
 
 
@@ -791,12 +797,15 @@ class GameScene extends Phaser.Scene {
     this.load.image('figureBroku', '/broku-figure.png');
     this.load.image('figureBrogeta', '/brogeta-figure.png');
     this.load.image('figureBroccolo', '/broccolo-figure.png');
+    this.load.image('figureBreezer', '/breezer-figure.png');
     this.load.image('figureBrhulk', '/brhulk-figure.png');
     this.load.image('figureBrolverine', '/brolverine-figure.png');
     this.load.image('figureSpiderBro', '/spider-bro-figure.png');
+    this.load.image('figureDeadbrool', '/deadbrool-figure.png');
     this.load.image('figureBromer', '/bromer-figure.png');
     this.load.image('figureBrusty', '/brusty-figure.png');
     this.load.image('figureBort', '/bort-figure.png');
+    this.load.image('figureBrolhouse', '/brolhouse-figure.png');
     this.load.image('figureSpongeBrob', '/spongebrob-figure.png');
     
 
@@ -963,6 +972,16 @@ class GameScene extends Phaser.Scene {
         });
     }
 }
+if (this.textures.exists('breezer')) {
+    if (!this.anims.exists('climbBreezer')) {
+        this.anims.create({ 
+            key: 'climbBreezer', 
+            frames: this.anims.generateFrameNumbers('breezer', { start: 0, end: 4 }), 
+            frameRate: 10, 
+            repeat: -1 
+        });
+    }
+}
     if (this.textures.exists('brhulk')) {
       if (!this.anims.exists('climbBrhulk')) {
           this.anims.create({ 
@@ -994,6 +1013,16 @@ class GameScene extends Phaser.Scene {
         });
     }
 }
+    if (this.textures.exists('deadbrool')) {
+        if (!this.anims.exists('climbDeadbrool')) {
+            this.anims.create({ 
+                key: 'climbDeadbrool', 
+                frames: this.anims.generateFrameNumbers('deadbrool', { start: 0, end: 4 }), 
+                frameRate: 10, 
+                repeat: -1 
+        });
+    }
+}
   if (this.textures.exists('bromer')) {
     if (!this.anims.exists('climbBromer')) {
         this.anims.create({ 
@@ -1020,6 +1049,16 @@ if (this.textures.exists('bort')) {
         this.anims.create({ 
             key: 'climbBort', 
             frames: this.anims.generateFrameNumbers('bort', { start: 0, end: 4 }), 
+            frameRate: 10, 
+            repeat: -1 
+        });
+    }
+}
+if (this.textures.exists('brolhouse')) {
+    if (!this.anims.exists('climbBrolhouse')) {
+        this.anims.create({ 
+            key: 'climbBrolhouse', 
+            frames: this.anims.generateFrameNumbers('brolhouse', { start: 0, end: 4 }), 
             frameRate: 10, 
             repeat: -1 
         });
@@ -1086,12 +1125,15 @@ if (this.textures.exists('spongebrob')) {
     else if (spriteKey === 'broku') this.monkeySprite.play('climbBroku');
     else if (spriteKey === 'brogeta') this.monkeySprite.play('climbBrogeta');
     else if (spriteKey === 'broccolo') this.monkeySprite.play('climbBroccolo');
+    else if (spriteKey === 'breezer') this.monkeySprite.play('climbBreezer');
     else if (spriteKey === 'brhulk') this.monkeySprite.play('climbBrhulk');
     else if (spriteKey === 'brolverine') this.monkeySprite.play('climbBrolverine');
     else if (spriteKey === 'spiderbro') this.monkeySprite.play('climbSpiderBro');
+    else if (spriteKey === 'deadbrool') this.monkeySprite.play('climbDeadbrool');
     else if (spriteKey === 'bromer') this.monkeySprite.play('climbBromer');
     else if (spriteKey === 'brusty') this.monkeySprite.play('climbBrusty');
     else if (spriteKey === 'bort') this.monkeySprite.play('climbBort');
+    else if (spriteKey === 'brolhouse') this.monkeySprite.play('climbBrolhouse');
     else if (spriteKey === 'spongebrob') this.monkeySprite.play('climbSpongeBrob');
 
     this.player = this.add.container(centerX, height * 0.75, [this.monkeySprite])
@@ -1926,6 +1968,9 @@ spawnChili() {
     else if (s === 'broccolo' && this.anims.exists('climbBroccolo')) { 
         this.broObject.play('climbBroccolo');
     }
+    else if (s === 'breezer' && this.anims.exists('climbBreezer')) { 
+        this.broObject.play('climbBreezer');
+    }
     else if (s === 'monkeyBro') {
         this.broObject.play('climbBro');
     } 
@@ -1938,6 +1983,10 @@ spawnChili() {
     else if (s === 'spiderbro' && this.anims.exists('climbSpiderBro')) {
         this.broObject.setScale(2.2); 
         this.broObject.play('climbSpiderBro');
+    }
+    else if (s === 'deadbrool' && this.anims.exists('climbDeadbrool')) {
+        this.broObject.setScale(2.2); 
+        this.broObject.play('climbDeadbrool');
     }
 
     else if (s === 'bromer' && this.anims.exists('climbBromer')) {
@@ -1952,6 +2001,10 @@ spawnChili() {
     else if (s === 'bort' && this.anims.exists('climbBort')) {
         this.broObject.setScale(2.0); // Tamaño estándar (o 1.8 si lo quieres más bajito)
         this.broObject.play('climbBort');
+    }
+    else if (s === 'bort' && this.anims.exists('climbBrolhouse')) {
+        this.broObject.setScale(2.0); // Tamaño estándar (o 1.8 si lo quieres más bajito)
+        this.broObject.play('climbBrolhouse');
     }
     else if (s === 'spongebrob' && this.anims.exists('climbSpongeBrob')) {
         this.broObject.setScale(2.2); 
@@ -2063,6 +2116,10 @@ spawnChili() {
         this.monkeySprite.play('climbSpiderBro');
         this.monkeySprite.setScale(2.2);
     }
+    else if (this.currentLeaderSkin === 'deadbrool') {
+        this.monkeySprite.play('climbDeadbrool');
+        this.monkeySprite.setScale(2.2);
+    }
       else if (this.currentLeaderSkin === 'brogeta') {
         this.monkeySprite.play('climbBrogeta');
         this.monkeySprite.setScale(2.2); // O 2.0 si lo quieres normal
@@ -2071,6 +2128,10 @@ spawnChili() {
       this.monkeySprite.play('climbBroccolo');
       this.monkeySprite.setScale(2.2);
       }
+      else if (this.currentLeaderSkin === 'breezer') {
+        this.monkeySprite.play('climbBreezer');
+        this.monkeySprite.setScale(2.2);
+        }
       else if (this.currentLeaderSkin === 'bromer') {
         this.monkeySprite.play('climbBromer');
         this.monkeySprite.setScale(2.2);
@@ -2081,6 +2142,10 @@ spawnChili() {
       }
       else if (this.currentLeaderSkin === 'bort') {
         this.monkeySprite.play('climbBort');
+        this.monkeySprite.setScale(2.0);
+      }
+      else if (this.currentLeaderSkin === 'brolhouse') {
+        this.monkeySprite.play('climbBrolhouse');
         this.monkeySprite.setScale(2.0);
       }
       else if (this.currentLeaderSkin === 'spongebrob') {
@@ -2247,7 +2312,7 @@ triggerGameOver(text) {
 
     // 2. BOTÓN X2 BANANAS
     if (this.sessionBananas > 0) {
-        const t_ad = this.lang === 'es' ? '¡RECLAMAR X2! 📺' : 'CLAIM X2! 📺';
+        const t_ad = this.lang === 'es' ? '¡BANANAS X2! 📺' : 'BANANAS X2! 📺';
         const adBtn = this.add.rectangle(cx, btnY, 300, 60, 0xffd700).setInteractive().setDepth(1000); 
         adBtn.setStrokeStyle(4, 0xffffff);
         const adText = this.add.text(cx, btnY, t_ad, { fontSize: '26px', fill: '#000000', fontStyle: 'bold', fontFamily: 'Courier' }).setOrigin(0.5).setInteractive().setDepth(1001);
