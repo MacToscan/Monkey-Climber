@@ -215,6 +215,22 @@ class MainMenu extends Phaser.Scene {
       } else if (!menuMusic.isPlaying) {
           menuMusic.play({ loop: true, volume: 0.5 });
       }
+      // --- AUTO-PAUSA DE MÚSICA AL BLOQUEAR EL MÓVIL ---
+      this.game.events.on('hidden', () => {
+        const music = this.sound.get('bgm_menu');
+        if (music && music.isPlaying) music.pause();
+    }, this);
+
+    this.game.events.on('visible', () => {
+        const music = this.sound.get('bgm_menu');
+        if (music && music.isPaused) music.resume();
+    }, this);
+
+    // Limpiamos los eventos al cambiar de escena para que no se dupliquen
+    this.events.on('shutdown', () => {
+        this.game.events.off('hidden');
+        this.game.events.off('visible');
+    });
       
       const totalBananas = localStorage.getItem('monkey_bananas') || 0;
       const highScore = localStorage.getItem('monkey_highscore') || 0;
@@ -226,6 +242,135 @@ class MainMenu extends Phaser.Scene {
       this.bestScoreText = this.add.text(0, 0, this.lang === 'es' ? `Mejor: ${highScore}m` : `Best: ${highScore}m`, { fontSize: '24px', fill: '#fff', fontFamily: 'Courier', fontStyle: 'bold' }).setOrigin(0.5);
       this.bananasText = this.add.text(0, 0, `${totalBananas} 🍌`, { fontSize: '24px', fill: '#ffff00', fontFamily: 'Courier', fontStyle: 'bold' }).setOrigin(0.5);
 
+      // ==========================================
+      // --- SISTEMA DE LOGROS (TROFEO) ---
+      // ==========================================
+      
+      // Botón Trofeo arriba a la izquierda
+      this.achieveBtn = this.add.text(20, 20, '🏆', { 
+        fontSize: '35px', padding: { top: 10, bottom: 10, left: 5, right: 10 } 
+    }).setOrigin(0, 0).setInteractive();
+    
+    this.achieveGroup = this.add.group();
+    
+    // Fondo negro semi-transparente
+    const achBg = this.add.rectangle(this.scale.width*0.5, this.scale.height*0.5, this.scale.width, this.scale.height, 0x000000).setAlpha(0.95).setInteractive();
+    
+    const achTitle = this.add.text(this.scale.width*0.5, this.scale.height * 0.15, this.lang === 'es' ? 'LOGROS' : 'ACHIEVEMENTS', { 
+        fontSize: '40px', fill: '#ffd700', fontStyle: 'bold', fontFamily: 'Courier', stroke: '#000', strokeThickness: 6 
+    }).setOrigin(0.5);
+
+    this.achieveGroup.addMultiple([achBg, achTitle]);
+
+    // --- LISTA DE LOGROS ---
+    const achievements = [
+        { id: 'lv5',  t_es: 'NIVEL 5', t_en: 'LEVEL 5', req: 5,  type: 'level', reward: 100 },
+        { id: 'lv8',  t_es: 'NIVEL 8', t_en: 'LEVEL 8', req: 8,  type: 'level', reward: 150 },
+        { id: 'lv10', t_es: 'NIVEL 10', t_en: 'LEVEL 10', req: 10, type: 'level', reward: 250 },
+        { id: 'sk5',  t_es: '5 MONOS', t_en: '5 SKINS', req: 5,  type: 'skins', reward: 200 },
+        { id: 'sk10', t_es: '10 MONOS', t_en: '10 SKINS', req: 10, type: 'skins', reward: 500 }
+    ];
+
+    // Leer datos del jugador
+    let claimedAch = JSON.parse(localStorage.getItem('monkey_achievements') || '[]');
+    const maxLevelReached = parseInt(localStorage.getItem('monkey_max_level') || 1);
+    const skinsUnlocked = JSON.parse(localStorage.getItem('unlocked_skins') || '["monkey"]').length;
+
+    let startY = this.scale.height * 0.28;
+
+    achievements.forEach((ach) => {
+        const isClaimed = claimedAch.includes(ach.id);
+        let isUnlocked = false;
+
+        if (ach.type === 'level' && maxLevelReached >= ach.req) isUnlocked = true;
+        if (ach.type === 'skins' && skinsUnlocked >= ach.req) isUnlocked = true;
+
+        // Caja del logro
+        const box = this.add.rectangle(this.scale.width*0.5, startY, this.scale.width * 0.85, 75, 0x222222).setStrokeStyle(2, 0x444444);
+        
+        const title = this.add.text(this.scale.width*0.5 - 130, startY - 15, this.lang === 'es' ? ach.t_es : ach.t_en, { fontSize: '20px', fill: '#fff', fontStyle: 'bold', fontFamily: 'Courier' }).setOrigin(0, 0.5);
+        const rewText = this.add.text(this.scale.width*0.5 - 130, startY + 15, `+${ach.reward} 🍌`, { fontSize: '18px', fill: '#ffff00', fontStyle: 'bold', fontFamily: 'Courier' }).setOrigin(0, 0.5);
+
+        // Estado del botón: Cobrado (Verde), Listo para cobrar (Amarillo), Bloqueado (Gris)
+        let btnColor = 0x555555;
+        let btnTextStr = '🔒';
+        if (isClaimed) { btnColor = 0x2ca02c; btnTextStr = 'OK'; }
+        else if (isUnlocked) { btnColor = 0xffd700; btnTextStr = '¡GET!'; }
+
+        const actionBtn = this.add.rectangle(this.scale.width*0.5 + 100, startY, 70, 45, btnColor).setInteractive();
+        const actionText = this.add.text(this.scale.width*0.5 + 100, startY, btnTextStr, { fontSize: isUnlocked && !isClaimed ? '18px' : '22px', fill: isUnlocked && !isClaimed ? '#000' : '#fff', fontStyle: 'bold' }).setOrigin(0.5);
+
+        // Lógica de cobrar recompensa
+        actionBtn.on('pointerdown', () => {
+            if (isUnlocked && !isClaimed) {
+                // Sumar bananas
+                let currentBananas = parseInt(localStorage.getItem('monkey_bananas') || 0);
+                currentBananas += ach.reward;
+                localStorage.setItem('monkey_bananas', currentBananas);
+                
+                // Actualizar textos en pantalla
+                this.bananasText.setText(`${currentBananas} 🍌`);
+                
+                // Efecto visual satisfactorio
+                this.cameras.main.flash(300, 255, 255, 0);
+                this.tweens.add({ targets: this.bananasText, scale: 1.5, duration: 150, yoyo: true });
+
+                // Marcar como cobrado
+                claimedAch.push(ach.id);
+                localStorage.setItem('monkey_achievements', JSON.stringify(claimedAch));
+
+                // Cambiar botón a verde
+                actionBtn.setFillStyle(0x2ca02c);
+                actionText.setText('OK').setFill('#fff');
+            } else if (!isUnlocked) {
+                // Si toca uno bloqueado, tiembla
+                this.cameras.main.shake(100, 0.005);
+            }
+        });
+
+        this.achieveGroup.addMultiple([box, title, rewText, actionBtn, actionText]);
+        startY += 85;
+    });
+
+    // Botón Cerrar (X roja)
+    const closeAchBtn = this.add.text(this.scale.width*0.5, this.scale.height * 0.88, 'X', { 
+        fontSize: '45px', fill: '#ff4444', fontStyle: 'bold', fontFamily: 'Courier', stroke: '#000', strokeThickness: 6 
+    }).setOrigin(0.5).setInteractive();
+    
+    // --- LA SOLUCIÓN: OCULTAR LOS BOTONES COMPLETAMENTE ---
+    closeAchBtn.on('pointerup', () => {
+        this.achieveGroup.setVisible(false);
+        
+        // Volvemos a mostrar y activar los botones
+        this.playBtn.setInteractive().setVisible(true);
+        this.playShadow.setVisible(true);
+        this.playText.setVisible(true);
+        
+        this.shopBtn.setInteractive().setVisible(true);
+        this.shopShadow.setVisible(true);
+        this.shopText.setVisible(true);
+    });
+
+    this.achieveGroup.add(closeAchBtn);
+    
+    // Forzamos a que todo el menú de logros tenga Depth 100 (por encima de todo)
+    this.achieveGroup.setDepth(100); 
+    this.achieveGroup.setVisible(false);
+
+    // Abrir menú de logros
+    this.achieveBtn.on('pointerdown', () => {
+        this.achieveGroup.setVisible(true);
+        
+        // Ocultamos y desactivamos los botones del menú principal
+        this.playBtn.disableInteractive().setVisible(false);
+        this.playShadow.setVisible(false);
+        this.playText.setVisible(false);
+        
+        this.shopBtn.disableInteractive().setVisible(false);
+        this.shopShadow.setVisible(false);
+        this.shopText.setVisible(false);
+    });
+    
       // --- BOTÓN PLAY (ESTILO RETRO PRO) ---
       // 1. Sombra oscura (No se mueve)
       this.playShadow = this.add.rectangle(0, 0, 260, 60, 0x000000).setOrigin(0.5); 
@@ -249,7 +394,7 @@ class MainMenu extends Phaser.Scene {
       // --- BOTÓN DE AJUSTES (ENGRANAJE) ---
       this.settingsBtn = this.add.text(0, 0, '⚙️', { 
         fontSize: '35px', 
-        padding: { top: 10, bottom: 10, left: 10, right: 10 } 
+        padding: { top: 10, bottom: 10, left: 10, right: 5 } 
     }).setOrigin(1, 0).setInteractive();
       
       // --- INTERFAZ DEL MENÚ DE AJUSTES ---
@@ -316,27 +461,42 @@ class MainMenu extends Phaser.Scene {
      langBtnBg.on('pointerout', () => langBtnBg.setFillStyle(0x2d9bf0));
      langBtnBg.on('pointerdown', toggleLangAction); // <--- SOLO SE ASIGNA AL FONDO
 
-      // 3. Botón Cerrar (X roja retro)
+      // Botón Cerrar (X roja retro)
       const closeSettingsBtn = this.add.text(this.scale.width*0.5, this.scale.height * 0.75, 'X', { 
-          fontSize: '45px', fill: '#ff4444', fontStyle: 'bold', fontFamily: 'Courier', stroke: '#000', strokeThickness: 6 
-      }).setOrigin(0.5).setInteractive();
-      
-      closeSettingsBtn.on('pointerup', () => {
-          this.settingsGroup.setVisible(false);
-          this.playBtn.setInteractive();
-          this.shopBtn.setInteractive();
-      });
+        fontSize: '45px', fill: '#ff4444', fontStyle: 'bold', fontFamily: 'Courier', stroke: '#000', strokeThickness: 6 
+    }).setOrigin(0.5).setInteractive();
+    
+    closeSettingsBtn.on('pointerup', () => {
+        this.settingsGroup.setVisible(false);
+        
+        // Volvemos a mostrar los botones
+        this.playBtn.setInteractive().setVisible(true);
+        this.playShadow.setVisible(true);
+        this.playText.setVisible(true);
+        
+        this.shopBtn.setInteractive().setVisible(true);
+        this.shopShadow.setVisible(true);
+        this.shopText.setVisible(true);
+    });
 
-      // Añadir todo al grupo y ocultarlo de inicio
-      this.settingsGroup.addMultiple([setBg, setTitle, soundBtnBg, soundBtnText, langBtnBg, langBtnText, closeSettingsBtn]);
-      this.settingsGroup.setVisible(false);
+    // Añadir todo al grupo y ocultarlo de inicio
+    this.settingsGroup.addMultiple([setBg, setTitle, soundBtnBg, soundBtnText, langBtnBg, langBtnText, closeSettingsBtn]);
+    this.settingsGroup.setDepth(100); // <-- Aseguramos que esté por encima
+    this.settingsGroup.setVisible(false);
 
-      // Acción de abrir ajustes al tocar el engranaje
-      this.settingsBtn.on('pointerdown', () => {
-          this.settingsGroup.setVisible(true);
-          this.playBtn.disableInteractive(); // Bloquear clics del fondo
-          this.shopBtn.disableInteractive();
-      });
+    // Acción de abrir ajustes al tocar el engranaje
+    this.settingsBtn.on('pointerdown', () => {
+        this.settingsGroup.setVisible(true);
+        
+        // Ocultamos los botones
+        this.playBtn.disableInteractive().setVisible(false);
+        this.playShadow.setVisible(false);
+        this.playText.setVisible(false);
+        
+        this.shopBtn.disableInteractive().setVisible(false);
+        this.shopShadow.setVisible(false);
+        this.shopText.setVisible(false);
+    });
 
      
       // ==========================================
@@ -495,6 +655,23 @@ class ShopScene extends Phaser.Scene {
 
     // Detectamos el idioma
     this.lang = localStorage.getItem('monkey_lang') || 'en';
+
+    // --- AUTO-PAUSA DE MÚSICA AL BLOQUEAR EL MÓVIL ---
+    this.game.events.on('hidden', () => {
+        const music = this.sound.get('bgm_menu');
+        if (music && music.isPlaying) music.pause();
+    }, this);
+
+    this.game.events.on('visible', () => {
+        const music = this.sound.get('bgm_menu');
+        if (music && music.isPaused) music.resume();
+    }, this);
+
+    // Limpiamos los eventos al cambiar de escena para que no se dupliquen
+    this.events.on('shutdown', () => {
+        this.game.events.off('hidden');
+        this.game.events.off('visible');
+    });
 
     // --- 1. FONDO DE LA TIENDA (Detrás de todo) ---
     this.add.rectangle(0, 0, width, height, 0x1a1a1a)
@@ -1218,7 +1395,7 @@ if (this.textures.exists('spongebrob')) {
     this.physics.add.overlap(this.player, this.obstacles, () => this.hit());
     this.physics.add.overlap(this.player, this.spiders, () => this.hit()); 
     this.physics.add.overlap(this.player, this.bees, () => this.hit()); 
-    this.physics.add.overlap(this.player, this.rocks, (player, rock) => { rock.destroy(); this.hit(); });
+    this.physics.add.overlap(this.player, this.rocks, () => this.hit());
     this.physics.add.overlap(this.player, this.bananas, this.collectBanana, null, this);
     this.physics.add.overlap(this.player, this.chilis, this.collectChili, null, this);
     this.physics.add.overlap(this.player, this.broCollectibles, this.rescueBro, null, this);
@@ -1916,26 +2093,25 @@ spawnChili() {
         this.chiliSound.play();
         c.destroy(); 
         
-        if (this.isTurbo) return; 
-        this.isTurbo = true; 
-        
-        // --- PUNTO 4: VELOCIDAD TURBO CONTROLADA ---
-        // Queremos que la velocidad máxima del chili sea siempre 700 (que era la proporción inicial).
-        const targetTurboSpeed = 700;
-        // Calculamos el empujón exacto que necesita para llegar a 700. 
-        // Le ponemos un Math.max de 100 por si llegas al nivel 20 y ya vas más rápido que el propio chili.
-        const speedBoost = Math.max(100, targetTurboSpeed - this.gameSpeed);
-        
-        this.gameSpeed += speedBoost; 
+        if (this.isTurbo) {
+            // Si ya tenías chili, reseteamos el temporizador para que no se raye
+            if (this.chiliTimer) this.chiliTimer.remove();
+        } else {
+            this.isTurbo = true; 
+            const targetTurboSpeed = 700;
+            this.speedBoost = Math.max(100, targetTurboSpeed - this.gameSpeed);
+            this.gameSpeed += this.speedBoost; 
+        }
+  
         this.monkeySprite.setTint(0xff4500); 
         
-        // --- PUNTO 5: DURACIÓN DE x SEGUNDO (x) ---
-        this.time.delayedCall(2200, () => { 
-            this.gameSpeed -= speedBoost; 
+        // Guardamos el temporizador en this.chiliTimer
+        this.chiliTimer = this.time.delayedCall(2200, () => { 
+            this.gameSpeed -= this.speedBoost; 
             this.monkeySprite.clearTint(); 
             this.isTurbo = false; 
         }); 
-      }
+    }
   
   
   rescueBro(_, b) { 
@@ -2002,7 +2178,7 @@ spawnChili() {
         this.broObject.setScale(2.0); // Tamaño estándar (o 1.8 si lo quieres más bajito)
         this.broObject.play('climbBort');
     }
-    else if (s === 'bort' && this.anims.exists('climbBrolhouse')) {
+    else if (s === 'brolhouse' && this.anims.exists('climbBrolhouse')) {
         this.broObject.setScale(2.0); // Tamaño estándar (o 1.8 si lo quieres más bajito)
         this.broObject.play('climbBrolhouse');
     }
@@ -2019,7 +2195,10 @@ spawnChili() {
   
   levelUp() { 
     this.level++; 
-    this.nextLevelScore += 2000; 
+    const maxLv = parseInt(localStorage.getItem('monkey_max_level') || 1);
+    if (this.level > maxLv) localStorage.setItem('monkey_max_level', this.level);
+    
+    this.nextLevelScore += 2000;
     this.levelText.setText('Lv ' + this.level); 
     // --- CURVA DE VELOCIDAD CONTROLADA ---
     if (this.level <= 4) {
@@ -2093,75 +2272,68 @@ spawnChili() {
       }
     }
   
-  hit() {
-    if (this.isInvulnerable) return;
-    if (this.hasBro && this.broObject) {
-      this.hitSound.play();
-      this.hasBro = false; this.cameras.main.flash(300, 255, 255, 255);
-      
-      // Cambio de skin al ser golpeado (el bro toma el relevo)
-      this.currentLeaderSkin = this.broObject.texture.key; 
-      this.monkeySprite.setTexture(this.currentLeaderSkin);
-
-      if (this.currentLeaderSkin === 'brhulk') this.monkeySprite.setScale(2.6);
-      else this.monkeySprite.setScale(2.0);
-      
-      // Reproducir animación correcta
-      if (this.currentLeaderSkin === 'broku') this.monkeySprite.play('climbBroku');
-      else if (this.currentLeaderSkin === 'monkeyBro') this.monkeySprite.play('climbBro');
-      else if (this.currentLeaderSkin === 'monkey') this.monkeySprite.play('climb'); // Añadido por seguridad
-      else if (this.currentLeaderSkin === 'brhulk') this.monkeySprite.play('climbBrhulk');
-      else if (this.currentLeaderSkin === 'brolverine') {this.monkeySprite.play('climbBrolverine');this.monkeySprite.setScale(2.2);}
-      else if (this.currentLeaderSkin === 'spiderbro') {
-        this.monkeySprite.play('climbSpiderBro');
-        this.monkeySprite.setScale(2.2);
-    }
-    else if (this.currentLeaderSkin === 'deadbrool') {
-        this.monkeySprite.play('climbDeadbrool');
-        this.monkeySprite.setScale(2.2);
-    }
-      else if (this.currentLeaderSkin === 'brogeta') {
-        this.monkeySprite.play('climbBrogeta');
-        this.monkeySprite.setScale(2.2); // O 2.0 si lo quieres normal
-      }
-      else if (this.currentLeaderSkin === 'broccolo') {
-      this.monkeySprite.play('climbBroccolo');
-      this.monkeySprite.setScale(2.2);
-      }
-      else if (this.currentLeaderSkin === 'breezer') {
-        this.monkeySprite.play('climbBreezer');
-        this.monkeySprite.setScale(2.2);
+    hit() {
+        if (this.isInvulnerable) return;
+        
+        if (this.hasBro && this.broObject) {
+          this.hitSound.play();
+          this.hasBro = false; 
+          this.cameras.main.flash(300, 255, 255, 255);
+          
+          // Cambio de skin al ser golpeado (el bro toma el relevo)
+          this.currentLeaderSkin = this.broObject.texture.key; 
+          this.monkeySprite.setTexture(this.currentLeaderSkin);
+    
+          if (this.currentLeaderSkin === 'brhulk') this.monkeySprite.setScale(2.6);
+          else this.monkeySprite.setScale(2.0);
+          
+          // Reproducir animación correcta
+          if (this.currentLeaderSkin === 'broku') this.monkeySprite.play('climbBroku');
+          else if (this.currentLeaderSkin === 'monkeyBro') this.monkeySprite.play('climbBro');
+          else if (this.currentLeaderSkin === 'monkey') this.monkeySprite.play('climb'); 
+          else if (this.currentLeaderSkin === 'brhulk') this.monkeySprite.play('climbBrhulk');
+          else if (this.currentLeaderSkin === 'brolverine') { this.monkeySprite.play('climbBrolverine'); this.monkeySprite.setScale(2.2); }
+          else if (this.currentLeaderSkin === 'spiderbro') { this.monkeySprite.play('climbSpiderBro'); this.monkeySprite.setScale(2.2); }
+          else if (this.currentLeaderSkin === 'deadbrool') { this.monkeySprite.play('climbDeadbrool'); this.monkeySprite.setScale(2.2); }
+          else if (this.currentLeaderSkin === 'brogeta') { this.monkeySprite.play('climbBrogeta'); this.monkeySprite.setScale(2.2); }
+          else if (this.currentLeaderSkin === 'broccolo') { this.monkeySprite.play('climbBroccolo'); this.monkeySprite.setScale(2.2); }
+          else if (this.currentLeaderSkin === 'breezer') { this.monkeySprite.play('climbBreezer'); this.monkeySprite.setScale(2.2); }
+          else if (this.currentLeaderSkin === 'bromer') { this.monkeySprite.play('climbBromer'); this.monkeySprite.setScale(2.2); }
+          else if (this.currentLeaderSkin === 'brusty') { this.monkeySprite.play('climbBrusty'); this.monkeySprite.setScale(2.2); }
+          else if (this.currentLeaderSkin === 'bort') { this.monkeySprite.play('climbBort'); this.monkeySprite.setScale(2.0); }
+          else if (this.currentLeaderSkin === 'brolhouse') { this.monkeySprite.play('climbBrolhouse'); this.monkeySprite.setScale(2.0); }
+          else if (this.currentLeaderSkin === 'spongebrob') { this.monkeySprite.play('climbSpongeBrob'); this.monkeySprite.setScale(2.0); }
+    
+          this.player.x = this.broObject.x; 
+          this.player.y = this.broObject.y;
+          this.broObject.destroy(); 
+          this.broObject = null;
+          
+          this.isInvulnerable = true; 
+          
+          // EFECTO REAL DE PARPADEO (Obliga a limpiar el estado)
+          this.player.setAlpha(1);
+          if (this.hitTween) this.hitTween.stop();
+          this.hitTween = this.tweens.add({
+              targets: this.player,
+              alpha: 0.2,
+              duration: 150,
+              yoyo: true,
+              repeat: 5 // Parpadea rápido durante el 1.5s
+          });
+    
+          this.tweens.add({ targets: this.player, y: this.scale.height * 0.75, duration: 300, ease: 'Power2' });
+          
+          this.time.delayedCall(1500, () => { 
+              this.isInvulnerable = false; 
+              this.player.setAlpha(1); 
+          });
+          
+          return; 
         }
-      else if (this.currentLeaderSkin === 'bromer') {
-        this.monkeySprite.play('climbBromer');
-        this.monkeySprite.setScale(2.2);
+        
+        this.triggerGameOver('GAME OVER!');
       }
-      else if (this.currentLeaderSkin === 'brusty') {
-        this.monkeySprite.play('climbBrusty');
-        this.monkeySprite.setScale(2.2);
-      }
-      else if (this.currentLeaderSkin === 'bort') {
-        this.monkeySprite.play('climbBort');
-        this.monkeySprite.setScale(2.0);
-      }
-      else if (this.currentLeaderSkin === 'brolhouse') {
-        this.monkeySprite.play('climbBrolhouse');
-        this.monkeySprite.setScale(2.0);
-      }
-      else if (this.currentLeaderSkin === 'spongebrob') {
-        this.monkeySprite.play('climbSpongeBrob');
-        this.monkeySprite.setScale(2.0);
-      }
-
-      this.player.x = this.broObject.x; this.player.y = this.broObject.y;
-      this.broObject.destroy(); this.broObject = null;
-      this.isInvulnerable = true; this.player.setAlpha(0.5);
-      this.tweens.add({ targets: this.player, y: this.scale.height * 0.75, duration: 300, ease: 'Power2' });
-      this.time.delayedCall(1500, () => { this.isInvulnerable = false; this.player.setAlpha(1); });
-      return; 
-    }
-    this.triggerGameOver('GAME OVER!');
-  }
 
   pauseGame() {
     // Si el tutorial no ha acabado o si ya estás muerto, no se puede pausar
@@ -2251,137 +2423,160 @@ triggerGameOver(text) {
     this.gameOverUI.push(ov, titleText, scoreTextObj, sessionBananasText);
 
     // =========================================================
-    // --- LÓGICA DE BOTONES APILADOS DINÁMICAMENTE ---
-    // =========================================================
-    let btnY = cy + 55; // Posición Y donde empieza a colocarse el primer botón
+        // --- LÓGICA DE BOTONES APILADOS DINÁMICAMENTE ---
+        // =========================================================
+        let btnY = cy + 55; 
 
-    // --- NUEVO: SEGURO DE MEDIO SEGUNDO ---
-    let canClick = false;
-    this.time.delayedCall(800, () => { canClick = true; });
+        // Usamos setTimeout puro para que no se congele el candado táctil
+        let canClick = false;
+        setTimeout(() => { canClick = true; }, 800);
 
-    // 1. BOTÓN REVIVIR (Solo sale 1 vez por partida)
-    if (!this.hasRevived) {
-        const t_revive = this.lang === 'es' ? '¡REVIVIR! 📺' : 'REBORN! 📺';
-        const revBtn = this.add.rectangle(cx, btnY, 300, 60, 0x2ca02c).setInteractive().setDepth(1000); 
-        revBtn.setStrokeStyle(4, 0xffffff);
-        const revText = this.add.text(cx, btnY, t_revive, { fontSize: '26px', fill: '#ffffff', fontStyle: 'bold', fontFamily: 'Courier' }).setOrigin(0.5).setInteractive().setDepth(1001);
-        
-        const revTween = this.tweens.add({ targets: [revBtn, revText], scaleX: 1.08, scaleY: 1.08, duration: 400, yoyo: true, repeat: -1, ease: 'Quad.easeInOut' });
+        // Bandera maestra para bloquear acciones simultáneas
+        let isAdPlaying = false; 
 
-        const reviveAction = () => {
-            if (!canClick) return;
-            revBtn.disableInteractive(); revText.disableInteractive(); revTween.stop();
-            revBtn.setScale(1); revBtn.setFillStyle(0xaaaaaa); revBtn.setStrokeStyle(0);
-            revText.setText(this.lang === 'es' ? 'CARGANDO...' : 'LOADING...');
+        // Variables fuera de los IF para poder apagarse el uno al otro
+        let revBtn = null, revText = null, revTween = null;
+        let adBtn = null, adText = null, adTween = null;
 
-            // SIMULACIÓN DE ANUNCIO DE REVIVIR
-            setTimeout(() => {
-                this.hasRevived = true;
-                
-                // 1. Limpiar pantalla de Game Over
-                this.gameOverUI.forEach(el => el.destroy());
+        // 1. BOTÓN REVIVIR (Solo sale 1 vez por partida)
+        if (!this.hasRevived) {
+            const t_revive = this.lang === 'es' ? '¡REVIVIR! 📺' : 'REBORN! 📺';
+            revBtn = this.add.rectangle(cx, btnY, 300, 60, 0x2ca02c).setInteractive().setDepth(1000); 
+            revBtn.setStrokeStyle(4, 0xffffff);
+            revText = this.add.text(cx, btnY, t_revive, { fontSize: '26px', fill: '#ffffff', fontStyle: 'bold', fontFamily: 'Courier' }).setOrigin(0.5).setInteractive().setDepth(1001);
+            
+            revTween = this.tweens.add({ targets: [revBtn, revText], scaleX: 1.08, scaleY: 1.08, duration: 400, yoyo: true, repeat: -1, ease: 'Quad.easeInOut' });
 
-                // 2. Colocar al mono en el centro y darle invulnerabilidad
-                this.player.x = cx;
-                this.player.y = h * 0.75;
-                this.isInvulnerable = true;
-                
-                // Efecto de parpadeo (Escudo temporal)
-                this.tweens.add({ targets: this.player, alpha: 0.2, duration: 200, yoyo: true, repeat: 8 });
-                setTimeout(() => { this.isInvulnerable = false; this.player.setAlpha(1); }, 3500);
+            const reviveAction = () => {
+                if (!canClick || isAdPlaying) return; 
+                isAdPlaying = true; 
 
-                // 3. Reanudar motor del juego y animaciones
-                this.isGameOver = false;
-                this.physics.resume();
-                if (this.gameMusic) this.gameMusic.play();
-                
-                // Reanudar animaciones
-                const currentAnim = this.monkeySprite.anims.currentAnim ? this.monkeySprite.anims.currentAnim.key : 'climb';
-                this.monkeySprite.play(currentAnim);
-                this.obstacles.children.iterate(o => { if (o && o.anims) o.resume(); });
-                this.spiders.children.iterate(s => { if (s && s.anims) s.resume(); });
-                this.bees.children.iterate(b => { if (b && b.anims) b.resume(); });
+                revBtn.disableInteractive(); revText.disableInteractive(); revTween.stop();
+                revBtn.setScale(1); revBtn.setFillStyle(0xaaaaaa); revBtn.setStrokeStyle(0);
+                revText.setText(this.lang === 'es' ? 'CARGANDO...' : 'LOADING...');
 
-            }, 2000);
-        };
-        revBtn.on('pointerup', reviveAction); revText.on('pointerup', reviveAction);
-        this.gameOverUI.push(revBtn, revText);
-        
-        btnY += 75; // Bajamos el siguiente botón
-    }
+                // Apagamos visualmente el botón de bananas si estaba en pantalla
+                if (adBtn) {
+                    adBtn.disableInteractive(); adText.disableInteractive();
+                    if (adTween) adTween.stop();
+                    adBtn.setScale(1); adBtn.setFillStyle(0x333333); adBtn.setStrokeStyle(0); adText.setFill('#555555');
+                }
 
-    // 2. BOTÓN X2 BANANAS
-    if (this.sessionBananas > 0) {
-        const t_ad = this.lang === 'es' ? '¡BANANAS X2! 📺' : 'BANANAS X2! 📺';
-        const adBtn = this.add.rectangle(cx, btnY, 300, 60, 0xffd700).setInteractive().setDepth(1000); 
-        adBtn.setStrokeStyle(4, 0xffffff);
-        const adText = this.add.text(cx, btnY, t_ad, { fontSize: '26px', fill: '#000000', fontStyle: 'bold', fontFamily: 'Courier' }).setOrigin(0.5).setInteractive().setDepth(1001);
+                // SIMULACIÓN DE ANUNCIO DE REVIVIR
+                setTimeout(() => {
+                    this.hasRevived = true;
+                    
+                    // Limpieza segura (el if(el) evita crasheos invisibles)
+                    this.gameOverUI.forEach(el => { if (el) el.destroy(); });
 
-        // Si ya usó revivir, el botón de doblar es el que late. Si no, late el de revivir para no marear.
-        let adTween = null;
-        if (this.hasRevived) {
-            adTween = this.tweens.add({ targets: [adBtn, adText], scaleX: 1.10, scaleY: 1.10, duration: 400, yoyo: true, repeat: -1, ease: 'Quad.easeInOut' });
+                    this.player.x = cx;
+                    this.player.y = h * 0.75;
+                    this.isInvulnerable = true;
+                    
+                    this.tweens.add({ targets: this.player, alpha: 0.2, duration: 200, yoyo: true, repeat: 8 });
+                    setTimeout(() => { this.isInvulnerable = false; this.player.setAlpha(1); }, 3500);
+
+                    this.isGameOver = false;
+                    this.physics.resume();
+                    if (this.gameMusic) this.gameMusic.play();
+                    
+                    const currentAnim = this.monkeySprite.anims.currentAnim ? this.monkeySprite.anims.currentAnim.key : 'climb';
+                    this.monkeySprite.play(currentAnim);
+                    this.obstacles.children.iterate(o => { if (o && o.anims) o.resume(); });
+                    this.spiders.children.iterate(s => { if (s && s.anims) s.resume(); });
+                    this.bees.children.iterate(b => { if (b && b.anims) b.resume(); });
+
+                }, 2000);
+            };
+            revBtn.on('pointerup', reviveAction); revText.on('pointerup', reviveAction);
+            this.gameOverUI.push(revBtn, revText);
+            
+            btnY += 75; 
         }
 
-        const showAdFunc = () => {
-            if (!canClick) return;
-            adBtn.disableInteractive(); adText.disableInteractive(); 
-            if (adTween) adTween.stop();
-            adBtn.setScale(1); adBtn.setFillStyle(0xaaaaaa); adBtn.setStrokeStyle(0);
-            adText.setText(this.lang === 'es' ? 'CARGANDO...' : 'LOADING...');
+        // 2. BOTÓN X2 BANANAS
+        if (this.sessionBananas > 0) {
+            const t_ad = this.lang === 'es' ? '¡BANANAS X2! 📺' : 'BANANAS X2! 📺';
+            adBtn = this.add.rectangle(cx, btnY, 300, 60, 0xffd700).setInteractive().setDepth(1000); 
+            adBtn.setStrokeStyle(4, 0xffffff);
+            adText = this.add.text(cx, btnY, t_ad, { fontSize: '26px', fill: '#000000', fontStyle: 'bold', fontFamily: 'Courier' }).setOrigin(0.5).setInteractive().setDepth(1001);
 
-            setTimeout(() => {
-                this.totalBananas += this.sessionBananas; 
-                this.sessionBananas *= 2; 
-                localStorage.setItem('monkey_bananas', this.totalBananas);
-                
-                this.cameras.main.flash(400, 255, 255, 0); 
-                sessionBananasText.setText(`Bananas: ${this.sessionBananas} 🍌`);
-                this.tweens.add({ targets: sessionBananasText, scaleX: 1.5, scaleY: 1.5, duration: 300, yoyo: true });
-                
-                adBtn.setFillStyle(0x2ca02c); 
-                adText.setFill('#ffffff');
-                adText.setText(this.lang === 'es' ? '¡CONSEGUIDO!' : 'ALRIGHT!');
-            }, 2000);
-        };
-        adBtn.on('pointerup', showAdFunc); adText.on('pointerup', showAdFunc);
-        this.gameOverUI.push(adBtn, adText);
+            if (this.hasRevived) {
+                adTween = this.tweens.add({ targets: [adBtn, adText], scaleX: 1.10, scaleY: 1.10, duration: 400, yoyo: true, repeat: -1, ease: 'Quad.easeInOut' });
+            }
+
+            const showAdFunc = () => {
+                if (!canClick || isAdPlaying) return; 
+                isAdPlaying = true; 
+
+                adBtn.disableInteractive(); adText.disableInteractive(); 
+                if (adTween) adTween.stop();
+                adBtn.setScale(1); adBtn.setFillStyle(0xaaaaaa); adBtn.setStrokeStyle(0);
+                adText.setText(this.lang === 'es' ? 'CARGANDO...' : 'LOADING...');
+
+                // --- LA PENALIZACIÓN --- 
+                // Al elegir doblar dinero, quemamos su oportunidad de revivir
+                this.hasRevived = true; 
+
+                // Apagamos el botón de revivir para que sepa que ha perdido la opción
+                if (revBtn) {
+                    revBtn.disableInteractive(); revText.disableInteractive();
+                    if (revTween) revTween.stop();
+                    revBtn.setScale(1); revBtn.setFillStyle(0x333333); revBtn.setStrokeStyle(0); revText.setFill('#555555');
+                }
+
+                // SIMULACIÓN DE ANUNCIO DE BANANAS
+                setTimeout(() => {
+                    this.totalBananas += this.sessionBananas; 
+                    this.sessionBananas *= 2; 
+                    localStorage.setItem('monkey_bananas', this.totalBananas);
+                    
+                    this.cameras.main.flash(400, 255, 255, 0); 
+                    sessionBananasText.setText(`Bananas: ${this.sessionBananas} 🍌`);
+                    this.tweens.add({ targets: sessionBananasText, scaleX: 1.5, scaleY: 1.5, duration: 300, yoyo: true });
+                    
+                    adBtn.setFillStyle(0x2ca02c); 
+                    adText.setFill('#ffffff');
+                    adText.setText(this.lang === 'es' ? '¡CONSEGUIDO!' : 'ALRIGHT!');
+
+                    // Liberamos los botones secundarios por si quiere salir o reintentar
+                    isAdPlaying = false;
+                }, 2000);
+            };
+            adBtn.on('pointerup', showAdFunc); adText.on('pointerup', showAdFunc);
+            this.gameOverUI.push(adBtn, adText);
+            
+            btnY += 75; 
+        }
+
+        // 3. BOTONES SECUNDARIOS (Replay y Menú)
         
-        btnY += 75; // Bajamos el siguiente botón
-    }
+        const t_replay = this.lang === 'es' ? 'JUGAR DE NUEVO' : 'REPLAY';
+        const rb = this.add.rectangle(cx, btnY + 10, 240, 45, 0x1a7bc0).setInteractive().setDepth(1000);
+        const rt = this.add.text(cx, btnY + 10, t_replay, { fontSize: '20px', fill: '#ddd', fontStyle: 'bold', fontFamily: 'Courier' }).setOrigin(0.5).setInteractive().setDepth(1001);
+        
+        const rbDown = () => { if (!canClick || isAdPlaying) return; rb.setScale(0.95); rt.setScale(0.95); rb.setFillStyle(0x115585); };
+        const rbUp = () => { if (!canClick || isAdPlaying) return; rb.setScale(1); rt.setScale(1); rb.setFillStyle(0x1a7bc0); };
+        
+        rb.on('pointerdown', rbDown); rt.on('pointerdown', rbDown); rb.on('pointerout', rbUp); rt.on('pointerout', rbUp); 
+        
+        const rf = () => { if (!canClick || isAdPlaying) return; rbUp(); this.scene.restart(); };
+        rb.on('pointerup', rf); rt.on('pointerup', rf);
 
-    // 3. BOTONES SECUNDARIOS (Replay y Menú)
-    
-    const t_replay = this.lang === 'es' ? 'JUGAR DE NUEVO' : 'REPLAY';
-    const rb = this.add.rectangle(cx, btnY + 10, 240, 45, 0x1a7bc0).setInteractive().setDepth(1000);
-    const rt = this.add.text(cx, btnY + 10, t_replay, { fontSize: '20px', fill: '#ddd', fontStyle: 'bold', fontFamily: 'Courier' }).setOrigin(0.5).setInteractive().setDepth(1001);
-    
-    // Aquí bloqueamos que el botón se hunda si está el seguro puesto
-    const rbDown = () => { if (!canClick) return; rb.setScale(0.95); rt.setScale(0.95); rb.setFillStyle(0x115585); };
-    const rbUp = () => { if (!canClick) return; rb.setScale(1); rt.setScale(1); rb.setFillStyle(0x1a7bc0); };
-    
-    rb.on('pointerdown', rbDown); rt.on('pointerdown', rbDown); rb.on('pointerout', rbUp); rt.on('pointerout', rbUp); 
-    
-    // Aquí bloqueamos la acción real de reiniciar la partida
-    const rf = () => { if (!canClick) return; rbUp(); this.scene.restart(); };
-    rb.on('pointerup', rf); rt.on('pointerup', rf);
-
-    const t_menu = this.lang === 'es' ? 'SALIR AL MENÚ' : 'BACK TO MENU';
-    const mb = this.add.rectangle(cx, btnY + 70, 240, 45, 0x555555).setInteractive().setDepth(1000);
-    const mt = this.add.text(cx, btnY + 70, t_menu, { fontSize: '20px', fill: '#bbb', fontStyle: 'bold', fontFamily: 'Courier' }).setOrigin(0.5).setInteractive().setDepth(1001);
-    
-    // Aquí bloqueamos que el botón de menú se hunda
-    const mbDown = () => { if (!canClick) return; mb.setScale(0.95); mt.setScale(0.95); mb.setFillStyle(0x333333); };
-    const mbUp = () => { if (!canClick) return; mb.setScale(1); mt.setScale(1); mb.setFillStyle(0x555555); };
-    
-    mb.on('pointerdown', mbDown); mt.on('pointerdown', mbDown); mb.on('pointerout', mbUp); mt.on('pointerout', mbUp);
-    
-    // Aquí bloqueamos la acción real de salir al menú
-    const mf = () => { if (!canClick) return; mbUp(); this.scene.start('MainMenu'); };
-    mb.on('pointerup', mf); mt.on('pointerup', mf);
-    
-    this.gameOverUI.push(rb, rt, mb, mt);
-}} // <--- Cierre de tu clase GameScene
+        const t_menu = this.lang === 'es' ? 'SALIR AL MENÚ' : 'BACK TO MENU';
+        const mb = this.add.rectangle(cx, btnY + 70, 240, 45, 0x555555).setInteractive().setDepth(1000);
+        const mt = this.add.text(cx, btnY + 70, t_menu, { fontSize: '20px', fill: '#bbb', fontStyle: 'bold', fontFamily: 'Courier' }).setOrigin(0.5).setInteractive().setDepth(1001);
+        
+        const mbDown = () => { if (!canClick || isAdPlaying) return; mb.setScale(0.95); mt.setScale(0.95); mb.setFillStyle(0x333333); };
+        const mbUp = () => { if (!canClick || isAdPlaying) return; mb.setScale(1); mt.setScale(1); mb.setFillStyle(0x555555); };
+        
+        mb.on('pointerdown', mbDown); mt.on('pointerdown', mbDown); mb.on('pointerout', mbUp); mt.on('pointerout', mbUp);
+        
+        const mf = () => { if (!canClick || isAdPlaying) return; mbUp(); this.scene.start('MainMenu'); };
+        mb.on('pointerup', mf); mt.on('pointerup', mf);
+        
+        this.gameOverUI.push(rb, rt, mb, mt);
+    }} // <--- Cierre de triggerGameOver
 
 // ================== CONFIG ==================
 const config = {
